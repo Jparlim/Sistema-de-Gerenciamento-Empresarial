@@ -1,22 +1,22 @@
-import { CreateAcountPendingType } from "./schema/SchemaAcount.js";
-import { prisma } from "../../../src/Prisma_Client/index.js";
+import { CreateAcountPendingType, CreateAcountPendingOfBodyType } from "./schema/SchemaAcount.js";
+import { Prisma } from "../../shared/prisma.js";
 
 export class RepositoryCount {
   async createPending(data: CreateAcountPendingType) {
-    return await prisma.company_Pending.create({
+    return await Prisma.company_Pending.create({
       data: data,
     });
   }
 
   async delete(id: number) {
-    return await prisma.company.delete({ where: { id } });
+    return await Prisma.company_Pending.delete({ where: { id: Number(id) } });
   }
 
   async findAll() {
-    return await prisma.company.findMany();
+    return await Prisma.company_Pending.findMany();
   }
 
   async findById(id: number) {
-    return await prisma.company.findUnique({ where: { id } });
+    return await Prisma.company_Pending.findUnique({ where: { id } });
   }
 }

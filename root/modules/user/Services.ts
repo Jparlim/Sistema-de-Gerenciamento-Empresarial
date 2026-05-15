@@ -30,6 +30,7 @@ export const ServicesAcount = {
         },
         data: {
           token: newToken,
+          token_expires: new Date(Date.now() + 15 * 60 * 1000),
         },
       });
 
@@ -38,7 +39,7 @@ export const ServicesAcount = {
       );
     }
 
-    if (verify?.created_at! > verify?.token_expires!) {
+    if (new Date() > verify?.token_expires!) {
       const tokenSend = crypto.randomInt(100000, 1000000).toString();
 
       await Prisma.company_Pending.update({
@@ -47,81 +48,45 @@ export const ServicesAcount = {
         },
         data: {
           token: tokenSend,
+          token_expires: new Date(Date.now() + 15 * 60 * 1000),
         },
       });
-
-      console.log(tokenSend);
 
       throw new Error("token expirou! outro token será enviado para seu email");
       // enviar token para email
     }
 
-    // const IdCount = await Prisma.company.create({
-    //   data: {
-    //     nomeEmpresa: verify?.nome!,
-    //     email: verify?.email!,
-    //     senha: verify?.senha!,
-    //     CNPJ: verify?.CNPJ!,
-    //     numero: verify?.numero!,
-    //     status: true,
-    //   },
-    // });
+    const userId = await repository.create({
+      nomeEmpresa: verify.nomeEmpresa!,
+      email: verify.email,
+      senha: verify.senha,
+      CNPJ: verify.CNPJ,
+      telefone: verify.telefone,
+      status: true,
+    });
 
-    // await Prisma.company_Pending.delete({
-    //   where: {
-    //     id: verify.id,
-    //   },
-    // });
+    await Prisma.company_Pending.delete({
+      where: {
+        id: verify.id,
+      },
+    });
 
-    // const tokenJwt = App.jwt.sign(
-    //   { IDcompany: IdCount.id, role: "admin" },
-    //   { expiresIn: "30m" },
-    // );
-
-    // const tokenJwt = App.jwt.sign(
-    //     { IDcompany: IdCount.id },
-    //     { expiresIn: "15m" },
-    // )
-
-    // const refreshTokenJwt = App.jwt.sign(
-    //     { IDcompany: IdCount.id },
-    //     { expiresIn: "7d" }
-    // )
-
-    // console.log(tokenJwt);
-
-    // return reply
-    // .setCookie("token", tokenJwt, {
-    //     httpOnly: true,
-    //     secure: false,
-    //     sameSite: "strict",
-    //     path: '/',
-    //     maxAge: 60 * 15
-    // })
-    // .setCookie("refreshToken", refreshTokenJwt, {
-    //     httpOnly: true,
-    //     secure: true,
-    //     sameSite: "strict",
-    //     path: '/',
-    //     maxAge: 60 * 60 * 24 * 7
-    // }).send({ success:true})
-
-    return repository.create();
+    return userId.id;
   },
 
   async UpdateAcount(id: number, data: UpdateAcountType) {
-    return repository.update(id, data);
+    return await repository.update(id, data);
   },
 
   async DeleteAcount(id: number) {
-    return repository.delete(id);
+    return await repository.delete(id);
   },
 
   async FindAllAcount() {
-    return repository.findAll();
+    return await repository.findAll();
   },
 
   async FindByIdAcount(id: number) {
-    return repository.findById(id);
+    return await repository.findById(id);
   },
 };

@@ -1,36 +1,50 @@
-import { CreateAcountPendingType } from "./schema/SchemaAcount.js";
+import { CreateAcountPendingOfBodyType } from "./schema/SchemaAcount.js";
 import { RepositoryCount } from "./Repository.js";
-import { prisma } from "../../../src/Prisma_Client/index.js";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { FastifyInstance } from "fastify";
-import { request } from "https";
+import { Prisma } from "../../shared/prisma.js";
 
 const repository = new RepositoryCount();
 
 export const ServicesAcount = {
   async CreateAcountPending(
-    data: CreateAcountPendingType,
+    data: CreateAcountPendingOfBodyType,
     jwt: FastifyInstance,
   ) {
-    const verify = await prisma.company.findFirst({
+    const verify = await Prisma.company.findFirst({
       where: {
-        or: [
-          { nomeEmpresa: data.nome },
+        OR: [
+          { nomeEmpresa: data.nomeEmpresa },
           { CNPJ: data.CNPJ },
-          { numero: data.numero },
+          { telefone: data.telefone },
         ],
       },
     });
 
-    if (verify) {
+    const verify_pending = await Prisma.company_Pending.findFirst({
+      where: {
+        OR: [
+          { nomeEmpresa: data.nomeEmpresa },
+          { CNPJ: data.CNPJ },
+          { telefone: data.telefone },
+        ],
+      },
+    });
+
+    if (verify || verify_pending) {
       throw new Error("Empresa já cadastrada!");
     }
 
     const tokenSend = crypto.randomInt(100000, 1000000).toString();
     const hashSenha = await bcrypt.hash(data.senha, 10);
 
-    const newData = { ...data, senha: hashSenha, token: tokenSend };
+    const newData = {
+      ...data,
+      senha: hashSenha,
+      token: tokenSend,
+      token_expires: new Date(Date.now() + 15 * 60 * 1000),
+    };
 
     const IdPending = await repository.createPending(newData);
 
@@ -44,20 +58,18 @@ export const ServicesAcount = {
       },
     );
 
-    console.log(tokenSend);
-
-    return tokenJWT;
+    return { token: tokenJWT, user: IdPending };
   },
 
   async DeleteAcount(id: number) {
-    return repository.delete(id);
+    return await repository.delete(id);
   },
 
   async FindAllAcount() {
-    return repository.findAll();
+    return await repository.findAll();
   },
 
   async FindByIdAcount(id: number) {
-    return repository.findById(id);
+    return await repository.findById(id);
   },
 };

@@ -10,24 +10,24 @@ model Company {
   id          Int       @id @default(autoincrement())
   nomeEmpresa String    @unique
   email       String    @unique
-  senha       String    @unique
+  senha       String
   CNPJ        String    @unique
-  numero      String    @unique
-  status      Boolean   @default(false)
+  telefone      String    @unique
+  status      Boolean   @default(true)
   saldo       Int?      @default(0)
   cliente     Cliente[]
-  IA          IA[]
+  IA          IA?
 }
 
 model Company_Pending {
   id            Int      @id @default(autoincrement())
-  nome          String   @unique
+  nomeEmpresa          String   @unique
   email         String   @unique
   senha         String   @unique
   CNPJ          String   @unique
-  numero        String   @unique
+  telefone        String   @unique
   token         String
-  token_expires DateTime @default(now())
+  token_expires DateTime
   created_at    DateTime @default(now())
 }
 
@@ -45,7 +45,7 @@ model Cliente {
 
 model IA {
   id           Int     @id @default(autoincrement())
-  companyId    Int
+  companyId    Int @unique
   company      Company @relation(fields: [companyId], references: [id])
   nomeEmpresa  String?
   nomeIA       String?
