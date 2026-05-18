@@ -8,7 +8,7 @@ export const SchemaCreateIA = z.object({
   instructions: z
     .string()
     .nonempty({ message: "As instruções para a IA são obrigatórias!" }),
-  data: z.object().optional(),
+  data: z.json().optional(),
 });
 
 export type SchemaCreateIAType = z.infer<typeof SchemaCreateIA>;

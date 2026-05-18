@@ -1,17 +1,19 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
 import { Prisma } from "../../shared/prisma.js";
-import { decode } from "querystring";
-import { SchemaCreateIA, SchemaCreateIAType } from "./schema/schemaIA.js";
+import { SchemaCreateIAType } from "./schema/schemaIA.js";
+import { RepositoryIA } from "./Repository.js";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 dotenv.config();
 
+const repository = new RepositoryIA();
+
 export const ServicesIA = {
-  async CreateConfig(data: SchemaCreateIAType, companyID: number) {
+  async CreateServices(data: SchemaCreateIAType, companyID: number) {
     const verify = await Prisma.company.findUnique({
       where: {
-        id: companyID,
+        id: Number(companyID),
       },
       select: {
         IA: true,
@@ -22,7 +24,29 @@ export const ServicesIA = {
       throw new Error("Empresa não encontrada!");
     }
 
-    if (verify?.IA)
+    if (verify.IA[0]) {
+      console.log(verify.IA);
       throw new Error("Configuração de IA já existe para esta empresa!");
+    }
+
+    return await repository.create(data, companyID);
+  },
+
+  async DeleteServices(id: number) {
+    const verify = await Prisma.iA.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!verify) {
+      throw new Error("Configuração de IA não encontrada!");
+    }
+
+    return await repository.delete(id);
+  },
+
+  async FindAllServices() {
+    return await repository.findAll();
   },
 };

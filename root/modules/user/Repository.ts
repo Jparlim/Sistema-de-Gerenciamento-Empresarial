@@ -25,6 +25,9 @@ export class RepositoryCount {
   }
 
   async findById(id: number) {
-    return await Prisma.company.findUnique({ where: { id } });
+    return await Prisma.company.findUnique({
+      where: { id: Number(id) },
+      include: { IA: true },
+    });
   }
 }

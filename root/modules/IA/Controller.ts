@@ -3,7 +3,7 @@ import { SchemaCreateIA } from "./schema/schemaIA.js";
 import { ServicesIA } from "./Services.js";
 
 export const ControllerIA = {
-  async CreateIA(request: FastifyRequest, reply: FastifyReply) {
+  async CreateController(request: FastifyRequest, reply: FastifyReply) {
     const data = SchemaCreateIA.parse(request.body);
     const token = request.cookies.refreshToken as string;
 
@@ -18,6 +18,16 @@ export const ControllerIA = {
     if (decode.role !== "admin")
       return reply.status(403).send({ message: "Acesso negado!" });
 
-    return await ServicesIA.CreateConfig(data, decode.IDcompany);
+    return await ServicesIA.CreateServices(data, decode.IDcompany);
+  },
+
+  async DeleteController(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as { id: number };
+
+    return await ServicesIA.DeleteServices(id);
+  },
+
+  async FindAllController(request: FastifyRequest, reply: FastifyReply) {
+    return await ServicesIA.FindAllServices;
   },
 };

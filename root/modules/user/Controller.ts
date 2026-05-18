@@ -20,7 +20,7 @@ export const User_Controller = {
       token: string;
     };
 
-    const id = ServicesAcount.CreateAcount(decode, token);
+    const id = await ServicesAcount.CreateAcount(decode, token);
 
     const tokenJwt = request.server.jwt.sign(
       { IDcompany: id, role: "admin" },
