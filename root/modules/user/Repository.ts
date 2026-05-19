@@ -21,7 +21,11 @@ export class RepositoryCount {
   }
 
   async findAll() {
-    return await Prisma.company.findMany();
+    return await Prisma.company.findMany({
+      include: {
+        IA: true,
+      },
+    });
   }
 
   async findById(id: number) {

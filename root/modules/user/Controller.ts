@@ -54,22 +54,22 @@ export const User_Controller = {
     const data = UpdateAcount.parse(request.body);
     const { id } = request.params as { id: number };
 
-    return ServicesAcount.UpdateAcount(id, data);
+    return await ServicesAcount.UpdateAcount(id, data);
   },
 
   async DeleteUser(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as { id: number };
 
-    return ServicesAcount.DeleteAcount(id);
+    return await ServicesAcount.DeleteAcount(id);
   },
 
   async FindAllUsers(request: FastifyRequest, reply: FastifyReply) {
-    return ServicesAcount.FindAllAcount();
+    return await ServicesAcount.FindAllAcount();
   },
 
   async FindByIdUser(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as { id: number };
 
-    return ServicesAcount.FindByIdAcount(id);
+    return await ServicesAcount.FindByIdAcount(id);
   },
 };

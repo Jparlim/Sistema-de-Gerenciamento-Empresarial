@@ -23,11 +23,23 @@ export const ControllerIA = {
 
   async DeleteController(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as { id: number };
+    const token = request.cookies.refreshToken as string;
+
+    if (!token)
+      return reply.status(401).send({ message: "token não encontrado!" });
+
+    const decode = request.server.jwt.verify(token) as {
+      IDcompany: number;
+      role: string;
+    };
+
+    if (decode.role !== "admin")
+      return reply.status(403).send({ message: "Acesso negado!" });
 
     return await ServicesIA.DeleteServices(id);
   },
 
   async FindAllController(request: FastifyRequest, reply: FastifyReply) {
-    return await ServicesIA.FindAllServices;
+    return await ServicesIA.FindAllServices();
   },
 };

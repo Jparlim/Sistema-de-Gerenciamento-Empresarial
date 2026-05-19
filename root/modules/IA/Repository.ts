@@ -3,7 +3,7 @@ import { SchemaCreateIAType } from "./schema/schemaIA.js";
 
 export class RepositoryIA {
   async create(dados: SchemaCreateIAType, companyID: number) {
-    await Prisma.iA.create({
+    return await Prisma.iA.create({
       data: {
         company: {
           connect: { id: companyID },
@@ -17,7 +17,7 @@ export class RepositoryIA {
   }
 
   async delete(id: number) {
-    await Prisma.iA.delete({
+    return await Prisma.iA.delete({
       where: {
         id: Number(id),
       },
@@ -25,6 +25,6 @@ export class RepositoryIA {
   }
 
   async findAll() {
-    await Prisma.iA.findMany();
+    return await Prisma.iA.findMany();
   }
 }
