@@ -3,7 +3,7 @@ import {
   UpdateAcountType,
   CreateAcountPendingType,
 } from "./schema/SchemaAcount.js";
-import { Prisma } from "../../shared/prisma.js";
+import { Prisma } from "../../infra/database/client.js";
 
 export class RepositoryCount {
   async create(data: CreateAcountType) {

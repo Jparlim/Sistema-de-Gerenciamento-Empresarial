@@ -1,5 +1,8 @@
-import { CreateAcountPendingType, CreateAcountPendingOfBodyType } from "./schema/SchemaAcount.js";
-import { Prisma } from "../../shared/prisma.js";
+import {
+  CreateAcountPendingType,
+  CreateAcountPendingOfBodyType,
+} from "./schema/SchemaAcount.js";
+import { Prisma } from "../../infra/database/client.js";
 
 export class RepositoryCount {
   async createPending(data: CreateAcountPendingType) {

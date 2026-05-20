@@ -2,7 +2,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
 import { prisma } from "../../Prisma_Client/index.js";
 import { CreateClient } from "../../Clients/createClient/index.js";
-import { client as redis } from "../../../Redis/controller.js";
+import { client as redis } from "../../../root/infra/cache/Redis/controller.js";
 dotenv.config();
 
 const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY});

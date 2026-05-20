@@ -1,4 +1,4 @@
-import { Prisma } from "../../shared/prisma.js";
+import { Prisma } from "../../infra/database/client.js";
 
 export class RepositoryLogin {
   async findByEmail(email: string) {

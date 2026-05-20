@@ -3,7 +3,7 @@ import { RepositoryCount } from "./Repository.js";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { FastifyInstance } from "fastify";
-import { Prisma } from "../../shared/prisma.js";
+import { Prisma } from "../../infra/database/client.js";
 
 const repository = new RepositoryCount();
 

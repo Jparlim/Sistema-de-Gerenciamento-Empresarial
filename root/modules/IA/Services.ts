@@ -1,6 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
-import { Prisma } from "../../shared/prisma.js";
+import { Prisma } from "../../infra/database/client.js";
 import { SchemaCreateIAType } from "./schema/schemaIA.js";
 import { RepositoryIA } from "./Repository.js";
 

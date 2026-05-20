@@ -1,4 +1,4 @@
-import { Prisma } from "../../shared/prisma.js";
+import { Prisma } from "../../infra/database/client.js";
 import { SchemaCreateIAType } from "./schema/schemaIA.js";
 
 export class RepositoryIA {

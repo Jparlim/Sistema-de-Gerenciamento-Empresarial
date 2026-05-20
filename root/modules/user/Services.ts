@@ -5,7 +5,7 @@ import {
   UpdateAcountType,
 } from "./schema/SchemaAcount.js";
 import { RepositoryCount } from "./Repository.js";
-import { Prisma } from "../../shared/prisma.js";
+import { Prisma } from "../../infra/database/client.js";
 import crypto from "crypto";
 
 const repository = new RepositoryCount();
