@@ -8,7 +8,8 @@
     "banco": "npx tsx src/db/index.ts",
     "estudio": "npx prisma studio",
     "dev-zero": "tsx watch --env-file .env src/index.ts",
-    "dev": "tsx watch --env-file .env root/shared/index.ts",
+    "dev": "tsx watch --env-file .env root/infra/http/server.ts",
+    "msg": "node root/integrations/whatsapp/twilio/send-whatsapp.ts",
     "seed": "node ./prisma/seed/index.ts"
   },
   "keywords": [],
@@ -40,6 +41,7 @@
     "bcrypt": "^6.0.0",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
+    "express": "^5.2.1",
     "ioredis": "^5.8.2",
     "jsonwebtoken": "^9.0.3",
     "node-cron": "^4.2.1",
@@ -48,6 +50,7 @@
     "prisma": "^7.4.0",
     "qs": "^6.14.0",
     "redis": "^5.12.1",
+    "twilio": "^6.0.2",
     "zod": "^4.1.5"
   }
 }
