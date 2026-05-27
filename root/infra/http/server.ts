@@ -1,9 +1,11 @@
 import "dotenv/config";
 import fastify from "fastify";
+import formbody from "@fastify/formbody";
 import { Route } from "./routes.js";
 
 const App = fastify({ logger: true });
 
+App.register(formbody);
 App.register(Route);
 
 const start = async () => {

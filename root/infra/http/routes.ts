@@ -8,6 +8,8 @@ import { CorsPlugin } from "./plugins/cors.js";
 import { TokensPlugin } from "./plugins/tokens.js";
 import { CookiePlugin } from "./plugins/cookies.js";
 
+import { sendWhatsappTwilio } from "../../integrations/whatsapp/twilio/send-whatsapp.js";
+
 export async function Route(app: FastifyInstance) {
   app.register(User_Route);
   app.register(User_pending_Route);
@@ -17,4 +19,6 @@ export async function Route(app: FastifyInstance) {
   app.register(CorsPlugin);
   app.register(TokensPlugin);
   app.register(CookiePlugin);
+
+  app.register(sendWhatsappTwilio);
 }

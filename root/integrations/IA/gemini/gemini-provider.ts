@@ -1,14 +1,19 @@
 import { gemini } from "./gemini-client.js";
 import { Type } from "@google/genai";
 
-export async function GenerateResponse(prompt: any, messages: any) {
+import { GeminiType } from "./schema/geminiSchema.js";
+
+export async function GenerateResponse(
+  data: GeminiType,
+  messages: { role: "user" | "system"; content: string }[],
+) {
   try {
     const response = await gemini.models.generateContent({
       model: "gemini-2.5-flash",
       contents: messages,
       config: {
         responseMimeType: "application/json",
-        systemInstruction: prompt.systemInstruction,
+        systemInstruction: ,
         responseSchema: {
           type: Type.OBJECT,
           properties: {
@@ -17,7 +22,7 @@ export async function GenerateResponse(prompt: any, messages: any) {
             },
             dataClient: {
               type: Type.OBJECT,
-              properties: prompt.data,
+              properties: data.data,
             },
           },
         },
