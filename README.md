@@ -1,94 +1,165 @@
-# Sistema de Gerenciamento Empresarial
+# Enterprise Management System - Backend
 
-Sistema desenvolvido para auxiliar no gerenciamento empresarial, permitindo o controle e organização de processos internos de forma prática e eficiente.
+## About
+
+Enterprise Management System is a backend application focused on business management and CRM automation.
+
+The system was developed to help companies manage inventory, customers, financial information, and AI-assisted communication in a centralized platform.
+
+One of the main features of the project is the customizable AI integration, allowing businesses to configure how the AI interacts with customers and collects important information during conversations.
+
+The backend is responsible for:
+- Inventory management
+- Customer filtering and organization
+- Financial data processing
+- AI communication workflows
+- WhatsApp integration
+- Authentication and security
+- Scheduling and visit management
 
 ---
 
-## 🚀 Funcionalidades
+## Main Features
 
-* Cadastro de usuários
-* Controle de estoque
-* Gerenciamento de clientes
-* Controle financeiro
-* Dashboard administrativa
-* Relatórios
-* Autenticação de usuários
+### CRM Management
+- Customer organization
+- Contact history
+- Business status tracking
+- Filters by:
+  - Day
+  - Week
+  - Month
+  - Semester
+
+### Inventory Control
+- Product stock management
+- Purchase price tracking
+- Supplier management
+
+### Financial System
+- Company cash flow
+- Monthly income and expenses
+- Profit calculation
+
+### AI Integration
+- Configurable AI assistant
+- Customer data capture during conversations
+- Redis memory integration for AI context persistence
+
+### Scheduling System
+- Calendar-based visit management
+- Daily appointments visualization
+
+### WhatsApp Integration
+- Twilio integration for WhatsApp communication testing
 
 ---
 
-## 🛠 Tecnologias utilizadas
-
-### Frontend
-
-* React
-* TypeScript
-* TailwindCSS
+## Tech Stack
 
 ### Backend
+- TypeScript
+- Node.js
+- Fastify
 
-* Node.js
-* Fastify
-* Typescript
+### Database
+- PostgreSQL
+- Prisma ORM
 
-### Banco de Dados
+### Infrastructure
+- Docker
+- Redis
 
-* PostgreSQL
-* Prisma como ORM
+### External Services
+- Twilio
+- Gemini AI
+- Ngrok
 
 ---
 
-## 📦 Instalação
+## Installation
 
-Clone o repositório:
-
-```bash
-git clone URL_DO_REPOSITORIO
-```
-
-Entre na pasta do projeto:
+Clone the repository:
 
 ```bash
-cd nome-do-projeto
+git clone <repository-url>
 ```
 
-Instale as dependências:
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-Inicie o projeto:
+Run the development server:
 
 ```bash
 npm run dev
 ```
 
----
+Open Prisma Studio:
 
-## 🔐 Variáveis de ambiente
-
-Crie um arquivo `.env` na raiz do projeto:
-
-```env
-DATABASE_URL=
-JWT_SECRET=
-PORT=
+```bash
+npm run studio
 ```
 
 ---
 
-## 📸 Screenshots
+## Environment Variables
 
-Adicione imagens do sistema aqui.
+Create a `.env` file in the root directory:
+
+```env
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+
+REDIS_HOST=
+REDIS_PORT=
+REDIS_PASSWORD=
+
+JWT_SECRET=
+JWT_REFRESH_SECRET=
+
+GEMINI_API_KEY=
+
+DATABASE_URL=
+
+COOKIE_SECRET=
+```
 
 ---
 
-## 📌 Objetivo do projeto
+## Database
 
-Este projeto foi desenvolvido com foco em aprendizado de desenvolvimento fullstack, arquitetura de sistemas e gerenciamento empresarial.
+The project uses:
+- PostgreSQL as the main database
+- Redis for AI memory persistence
+- Docker for database containerization
 
 ---
 
-## 📄 Licença
+## API
 
-Este projeto está sob a licença MIT.
+Currently, the backend uses Ngrok to expose the localhost server publicly during development and testing.
+
+Production API routes are still under development.
+
+---
+
+## Current Status
+
+The project is currently focused on completing the CRM structure and core business functionalities.
+
+---
+
+## Domain
+
+Official domain:
+
+https://quantyum.com.br
+
+---
+
+## License
+
+Private project.
