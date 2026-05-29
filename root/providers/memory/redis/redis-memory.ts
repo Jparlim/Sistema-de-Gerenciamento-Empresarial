@@ -6,5 +6,5 @@ export async function setInMemory(
 ) {
   //   client.flushAll();
   await client.RPUSH(key, JSON.stringify(value));
-  return await client.LRANGE(key, 0, -1);
+  return await client.LRANGE(key, 15, -1);
 }

@@ -10,27 +10,11 @@ const repository = new RepositoryCount();
 export const ServicesAcount = {
   async CreateAcountPending(
     data: CreateAcountPendingOfBodyType,
-    jwt: FastifyInstance,
+    token: FastifyInstance,
   ) {
-    const verify = await Prisma.company.findFirst({
-      where: {
-        OR: [
-          { nomeEmpresa: data.nomeEmpresa },
-          { CNPJ: data.CNPJ },
-          { telefone: data.telefone },
-        ],
-      },
-    });
+    const verify = await repository.findFirst(data);
 
-    const verify_pending = await Prisma.company_Pending.findFirst({
-      where: {
-        OR: [
-          { nomeEmpresa: data.nomeEmpresa },
-          { CNPJ: data.CNPJ },
-          { telefone: data.telefone },
-        ],
-      },
-    });
+    const verify_pending = await repository.findFirstCompanyExists(data);
 
     if (verify || verify_pending) {
       throw new Error("Empresa já cadastrada!");
@@ -41,6 +25,7 @@ export const ServicesAcount = {
 
     const newData = {
       ...data,
+      telefone: data.telefone.replace(/\D/g, ""),
       senha: hashSenha,
       token: tokenSend,
       token_expires: new Date(Date.now() + 15 * 60 * 1000),
@@ -48,7 +33,7 @@ export const ServicesAcount = {
 
     const IdPending = await repository.createPending(newData);
 
-    const tokenJWT = jwt.jwt.sign(
+    const tokenJWT = token.jwt.sign(
       {
         id: IdPending.id,
         token: tokenSend,

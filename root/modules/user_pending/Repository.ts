@@ -22,4 +22,28 @@ export class RepositoryCount {
   async findById(id: number) {
     return await Prisma.company_Pending.findUnique({ where: { id } });
   }
+
+  async findFirst(data: CreateAcountPendingOfBodyType) {
+    return await Prisma.company_Pending.findFirst({
+      where: {
+        OR: [
+          { nomeEmpresa: data.nomeEmpresa },
+          { CNPJ: data.CNPJ },
+          { telefone: data.telefone },
+        ],
+      },
+    });
+  }
+
+  async findFirstCompanyExists(data: CreateAcountPendingOfBodyType) {
+    return await Prisma.company.findFirst({
+      where: {
+        OR: [
+          { nomeEmpresa: data.nomeEmpresa },
+          { CNPJ: data.CNPJ },
+          { telefone: data.telefone },
+        ],
+      },
+    });
+  }
 }

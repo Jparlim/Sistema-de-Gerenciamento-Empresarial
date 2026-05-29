@@ -4,7 +4,7 @@ export class Repository {
   async getData(number: string) {
     return await Prisma.company.findUnique({
       where: {
-        telefone: number,
+        telefone: `+${number}`,
       },
       select: {
         IA: true,

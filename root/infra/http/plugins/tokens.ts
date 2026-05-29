@@ -1,7 +1,8 @@
 import { FastifyInstance } from "fastify";
 import jwt from "@fastify/jwt";
+import "dotenv/config";
 
-export async function TokensPlugin(app: FastifyInstance) {
+export function TokensPlugin(app: FastifyInstance) {
   app.register(jwt, {
     secret: process.env.JWT_SECRET as string,
   });

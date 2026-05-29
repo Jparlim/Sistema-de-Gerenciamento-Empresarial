@@ -5,11 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "banco": "npx tsx src/db/index.ts",
     "estudio": "npx prisma studio",
-    "dev-zero": "tsx watch --env-file .env src/index.ts",
     "dev": "tsx watch --env-file .env root/infra/http/server.ts",
-    "msg": "node root/integrations/whatsapp/twilio/send-whatsapp.ts",
     "seed": "node ./prisma/seed/index.ts"
   },
   "keywords": [],

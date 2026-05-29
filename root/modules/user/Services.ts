@@ -12,11 +12,7 @@ const repository = new RepositoryCount();
 
 export const ServicesAcount = {
   async CreateAcount(data: { id: number; token: string }, token: string) {
-    const verify = await Prisma.company_Pending.findFirst({
-      where: {
-        id: data.id,
-      },
-    });
+    const verify = await repository.findByIdPending(data.id);
 
     if (!verify)
       throw new Error("Ocorreu um erro! empresa não foi encontrada!");

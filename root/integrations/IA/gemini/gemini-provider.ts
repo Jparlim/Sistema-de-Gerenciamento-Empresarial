@@ -13,7 +13,13 @@ export async function GenerateResponse(
       contents: messages,
       config: {
         responseMimeType: "application/json",
-        systemInstruction: ,
+        systemInstruction:
+          "nome da empresa: " +
+          data.nomeEmpresa +
+          "seu nome é: " +
+          data.nomeIA +
+          "instruções: " +
+          data.instructions,
         responseSchema: {
           type: Type.OBJECT,
           properties: {

@@ -34,4 +34,10 @@ export class RepositoryCount {
       include: { IA: true },
     });
   }
+
+  async findByIdPending(id: number) {
+    return await Prisma.company_Pending.findUnique({
+      where: { id: Number(id) },
+    });
+  }
 }
