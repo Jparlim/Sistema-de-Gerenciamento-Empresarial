@@ -1,11 +1,11 @@
 import { gemini } from "./gemini-client.js";
 import { Type } from "@google/genai";
-
-import { GeminiType } from "./schema/geminiSchema.js";
+import { GeminiType, GeminiTypeData } from "./schema/geminiSchema.js";
 
 export async function GenerateResponse(
-  data: GeminiType,
-  messages: { role: "user" | "system"; content: string }[],
+  dataCompany: GeminiType,
+  dataRequest: GeminiTypeData,
+  messages: { role: "user" | "model"; parts: [{ text: string }] }[],
 ) {
   try {
     const response = await gemini.models.generateContent({
@@ -15,11 +15,11 @@ export async function GenerateResponse(
         responseMimeType: "application/json",
         systemInstruction:
           "nome da empresa: " +
-          data.nomeEmpresa +
+          dataCompany.nomeEmpresa +
           "seu nome é: " +
-          data.nomeIA +
+          dataCompany.nomeIA +
           "instruções: " +
-          data.instructions,
+          dataCompany.instructions,
         responseSchema: {
           type: Type.OBJECT,
           properties: {
@@ -28,18 +28,22 @@ export async function GenerateResponse(
             },
             dataClient: {
               type: Type.OBJECT,
-              properties: data.data,
+              properties: dataRequest.data,
             },
           },
         },
       },
     });
 
-    return {
-      response: response,
-      dataClient: JSON.parse(response.text as string)[0].dataClient,
-    };
+    console.log({
+      response: JSON.parse(response.text as string),
+    });
+
+    // return {
+    //   response: response,
+    //   dataClient: JSON.parse(response.text as string)[0].dataClient,
+    // };
   } catch (error) {
-    throw new Error("Failed to generate response");
+    throw new Error("Failed to generate response", { cause: error });
   }
 }

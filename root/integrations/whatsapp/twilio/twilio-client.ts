@@ -4,17 +4,13 @@ dotenv.config();
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
+const whatsappNumber = process.env.TWILIO_WHATSAPP_NUMBER;
 const client = twilio(accountSid, authToken);
 
-async function createMessage() {
-  const message = await client.messages.create({
-    contentSid: "HXb5b62575e6e4ff6129ad7c8efe1f983e",
-    contentVariables: JSON.stringify({ 1: "22 July 2026", 2: "3:15pm" }),
-    from: "whatsapp:+14155238886",
-    to: "whatsapp:+554384623351",
+export async function createMessage(content: string, to: string) {
+  return await client.messages.create({
+    body: content,
+    from: `whatsapp:${whatsappNumber}`,
+    to: `whatsapp:+${to}`,
   });
-
-  console.log(message.body);
 }
-
-createMessage();

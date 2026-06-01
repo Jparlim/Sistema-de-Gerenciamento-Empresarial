@@ -3,29 +3,71 @@ import { setInMemory } from "../../providers/memory/redis/redis-memory.js";
 import { GenerateResponse } from "../../integrations/IA/gemini/gemini-provider.js";
 import { GeminiType } from "../../integrations/IA/gemini/schema/geminiSchema.js";
 
+import { Type } from "@google/genai";
+
+type GeminiMessage = {
+  role: "user" | "model";
+  parts: [{ text: string }];
+};
+
+type Message = {
+  role: "user" | "model";
+  content: string;
+};
+
 const repository = new Repository();
 
 export async function handleIncomingWhatsappMessage(
   key: string,
   companyNumber: string,
-  value: { role: "user" | "system"; content: string },
+  value: { role: "user" | "model"; content: string },
 ) {
-  const history = await setInMemory(key, value);
+  const history: GeminiMessage[] = await setInMemory(key, value).then((res) => {
+    return res
+      .map((item) => JSON.parse(item) as Message)
+      .map((item) => ({
+        role: item.role === "user" ? "user" : "model",
+        parts: [{ text: item.content }],
+      }));
+  });
 
   const companyNumberfixed = companyNumber.replace(/\D/g, "");
 
-  const data = await repository.getData(companyNumberfixed);
+  const dataCompany = await repository
+    .getData(companyNumberfixed)
+    .then((res) => {
+      return res?.IA[0] as GeminiType;
+    });
 
-  if (!data) {
+  if (!dataCompany) {
     throw new Error("Company not found for the provided number");
-  } else if (data === undefined) {
+  } else if (dataCompany === undefined) {
     throw new Error("Company data is undefined");
     // criar uma IA de emergência para responder que a empresa não tem IA configurada
   }
 
-  console.log({ data: data.IA[0], history });
+  const TypeMap = {
+    String: Type.STRING,
+    Number: Type.NUMBER,
+    Boolean: Type.BOOLEAN,
+  } as const;
 
-  // o historico esta vindo como uma lista com varias strings, acho que precisa tipar para json, tem que ver
+  const dynamicProperties = Object.fromEntries(
+    Object.entries(dataCompany.data).map(([key, value]) => [
+      key,
+      {
+        type: TypeMap[value],
+      },
+    ]),
+  );
 
-  // const result = await GenerateResponse(data.IA[0] as GeminiType, history);
+  // return console.log(dynamicProperties);
+
+  const result = await GenerateResponse(
+    dataCompany,
+    dynamicProperties,
+    history,
+  );
+
+  return result;
 }

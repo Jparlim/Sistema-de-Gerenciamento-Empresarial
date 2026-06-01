@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { twilioWhatsappSchema } from "./schema/send-whatsapp-schema.js";
 import { handleIncomingWhatsappMessage } from "../../../workflows/handle-incoming-whatsapp-message/service.js";
+import { createMessage } from "./twilio-client.js";
 
 export async function sendWhatsappTwilio(app: FastifyInstance) {
   app.post("/whatsapp", async (request, reply) => {
@@ -8,13 +9,17 @@ export async function sendWhatsappTwilio(app: FastifyInstance) {
 
     const newWaId = data.WaId + "-" + data.To;
 
-    // const result =
-    await handleIncomingWhatsappMessage(newWaId, data.To, {
+    const result = await handleIncomingWhatsappMessage(newWaId, data.To, {
       role: "user",
       content: data.Body,
     });
 
-    // console.log(result);
+    // await createMessage(result.response.text as string, data.From);
+
+    // return reply
+    //   .status(200)
+    //   .type("text/xml")
+    //   .send(result.response.text as string);
   });
 
   app.get("/whatsapp", (request, reply) => {
