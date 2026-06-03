@@ -35,14 +35,14 @@ export async function GenerateResponse(
       },
     });
 
-    console.log({
-      response: JSON.parse(response.text as string),
-    });
-
-    // return {
-    //   response: response,
-    //   dataClient: JSON.parse(response.text as string)[0].dataClient,
-    // };
+    return {
+      response: JSON.parse(
+        response.candidates![0].content?.parts![0].text as string,
+      ).resposta,
+      dataClient: JSON.parse(
+        response.candidates![0].content?.parts![0].text as string,
+      ).dataClient,
+    };
   } catch (error) {
     throw new Error("Failed to generate response", { cause: error });
   }

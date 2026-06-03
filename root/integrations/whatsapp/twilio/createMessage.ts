@@ -11,6 +11,6 @@ export async function createMessage(content: string, to: string) {
   return await client.messages.create({
     body: content,
     from: `whatsapp:${whatsappNumber}`,
-    to: `whatsapp:+${to}`,
+    to: `${to}`,
   });
 }
