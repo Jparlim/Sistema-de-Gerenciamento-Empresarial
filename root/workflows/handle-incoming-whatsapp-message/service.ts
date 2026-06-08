@@ -69,5 +69,7 @@ export async function handleIncomingWhatsappMessage(
     history,
   );
 
+  await setInMemory(key, { role: "model", content: result.response });
+
   return result;
 }

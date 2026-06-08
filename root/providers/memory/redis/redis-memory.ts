@@ -4,7 +4,7 @@ export async function setInMemory(
   key: string,
   value: { role: "user" | "model"; content: string },
 ) {
-  //   client.flushAll();
+  // return client.flushAll();
   await client.RPUSH(key, JSON.stringify(value));
-  return await client.LRANGE(key, 35, -1);
+  return await client.LRANGE(key, -35, -1);
 }
