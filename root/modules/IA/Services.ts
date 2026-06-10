@@ -24,7 +24,7 @@ export const ServicesIA = {
       throw new Error("Empresa não encontrada!");
     }
 
-    if (verify.IA[0]) {
+    if (verify.IA) {
       console.log(verify.IA);
       throw new Error("Configuração de IA já existe para esta empresa!");
     }

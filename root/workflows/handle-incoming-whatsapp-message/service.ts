@@ -2,6 +2,7 @@ import { Repository } from "./repository.js";
 import { setInMemory } from "../../providers/memory/redis/redis-memory.js";
 import { GenerateResponse } from "../../integrations/IA/gemini/gemini-provider.js";
 import { GeminiType } from "../../integrations/IA/gemini/schema/geminiSchema.js";
+import { ServicesClient } from "../../modules/cliente/Services.js";
 
 import { Type } from "@google/genai";
 
@@ -36,7 +37,7 @@ export async function handleIncomingWhatsappMessage(
   const dataCompany = await repository
     .getData(companyNumberfixed)
     .then((res) => {
-      return res?.IA[0] as GeminiType;
+      return res?.IA as GeminiType;
     });
 
   if (!dataCompany) {
@@ -70,6 +71,12 @@ export async function handleIncomingWhatsappMessage(
   );
 
   await setInMemory(key, { role: "model", content: result.response });
+
+  await ServicesClient.CreateServicesWithAI({
+    data: result.dataClient,
+    id: dataCompany.companyId,
+  });
+  // precisa do numero e nome do cliente. deixar estes dados como padrão!
 
   return result;
 }

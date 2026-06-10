@@ -5,6 +5,7 @@ const FieldTypeSchema = z.enum(["String", "Number", "Boolean"]);
 
 export const geminiSchema = z.object({
   id: z.number(),
+  companyId: z.number(),
   nomeEmpresa: z.string(),
   nomeIA: z.string(),
   instructions: z.string(),

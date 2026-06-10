@@ -6,7 +6,7 @@ export class Repository {
       where: {
         telefone: `+${number}`,
       },
-      select: {
+      include: {
         IA: true,
       },
     });

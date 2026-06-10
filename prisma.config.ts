@@ -5,4 +5,5 @@ export default defineConfig({
   datasource: {
     url: process.env.DATABASE_URL as string,
   },
+  schema: "./root/infra/database/prisma/schema.prisma",
 });

@@ -37,9 +37,8 @@ model Cliente {
   company   Company  @relation(fields: [companyId], references: [id])
   nome      String?
   contato   String   @unique
-  data      Json?
-  time      DateTime @default(now())
-  status    Boolean  @default(false)
+  date      DateTime @default(now())
+  status    String
   visits    Visits[]
 }
 

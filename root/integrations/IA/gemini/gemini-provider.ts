@@ -13,13 +13,18 @@ export async function GenerateResponse(
       contents: messages,
       config: {
         responseMimeType: "application/json",
-        systemInstruction:
-          "nome da empresa: " +
-          dataCompany.nomeEmpresa +
-          "seu nome é: " +
-          dataCompany.nomeIA +
-          "instruções: " +
-          dataCompany.instructions,
+        systemInstruction: `
+        nome da empresa: ${dataCompany.nomeEmpresa}
+        nome da IA: ${dataCompany.nomeIA}
+        instruções: ${dataCompany.instructions}
+        
+        instruções padrão: Você deve extrair do histórico da conversa todas as informações do cliente
+        que correspondam aos campos de dataClient.
+
+        Se uma informação não estiver presente, retorne null.
+
+        Nunca invente dados.
+        `,
         responseSchema: {
           type: Type.OBJECT,
           properties: {
@@ -28,7 +33,7 @@ export async function GenerateResponse(
             },
             dataClient: {
               type: Type.OBJECT,
-              properties: dataRequest.data,
+              properties: dataRequest,
             },
           },
         },
