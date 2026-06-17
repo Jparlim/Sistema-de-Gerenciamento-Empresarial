@@ -9,7 +9,7 @@ export async function sendWhatsappTwilio(app: FastifyInstance) {
 
     const newWaId = data.WaId + "-" + data.To;
 
-    const result = await handleIncomingWhatsappMessage(newWaId, data.To, {
+    const result = await handleIncomingWhatsappMessage(newWaId, data.From, data.To, {
       role: "user",
       content: data.Body,
     });

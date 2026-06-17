@@ -1,7 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
 import { Prisma } from "../../infra/database/client.js";
-import { SchemaCreateIAType } from "./schema/schemaIA.js";
+import { SchemaCreateIAType, SchemaUpdateIAType } from "./schema/schemaIA.js";
 import { RepositoryIA } from "./Repository.js";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -48,5 +48,10 @@ export const ServicesIA = {
 
   async FindAllServices() {
     return await repository.findAll();
+  },
+
+  async UpdateServices(id: number, data: SchemaUpdateIAType) {
+    // concertar a lógica para tirar apenas os dados que foram enviados, os que chegarem null ou "" não enviar para atualizar
+    return await repository.update(id, data);
   },
 };

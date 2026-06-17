@@ -38,6 +38,7 @@ model Cliente {
   nome      String?
   contato   String   @unique
   date      DateTime @default(now())
+  dados     Json?
   status    String
   visits    Visits[]
 }

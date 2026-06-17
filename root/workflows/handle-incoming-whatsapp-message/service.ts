@@ -20,6 +20,7 @@ const repository = new Repository();
 
 export async function handleIncomingWhatsappMessage(
   key: string,
+  clientNumber: string,
   companyNumber: string,
   value: { role: "user" | "model"; content: string },
 ) {
@@ -53,16 +54,20 @@ export async function handleIncomingWhatsappMessage(
     Boolean: Type.BOOLEAN,
   } as const;
 
-  const dynamicProperties = Object.fromEntries(
-    Object.entries(dataCompany.data).map(([key, value]) => [
-      key,
-      {
-        type: TypeMap[value],
-      },
-    ]),
-  );
+  const dynamicProperties = {
+    ...Object.fromEntries(
+      Object.entries(dataCompany.data).map(([key, value]) => [
+        key,
+        {
+          type: TypeMap[value],
+        },
+      ]),
+    ),
+    nome: { type: TypeMap["String"] },
+  };
 
-  // return console.log(dynamicProperties);
+  // fromEntries = trnasforma um array de arrays em um objeto, onde cada sub-array contém uma chave e um valor.
+  // entries = transforma um objeto em um array de arrays, onde cada sub-array contém uma chave e um valor.
 
   const result = await GenerateResponse(
     dataCompany,
@@ -73,10 +78,12 @@ export async function handleIncomingWhatsappMessage(
   await setInMemory(key, { role: "model", content: result.response });
 
   await ServicesClient.CreateServicesWithAI({
-    data: result.dataClient,
-    id: dataCompany.companyId,
+    nome: result.dataClient.nome || "não identificado",
+    contato: clientNumber || "não identificado",
+    status: "Em Negociação",
+    companyId: dataCompany.companyId,
+    dados: result.dataClient || null,
   });
-  // precisa do numero e nome do cliente. deixar estes dados como padrão!
 
   return result;
 }

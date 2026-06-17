@@ -7,6 +7,9 @@ export const SchemaDataClient = z.object({
     .nonempty({ message: "número do cliente deve ser inserido!" }),
   status: z.enum(["Fechado", "Desistência", "Em Negociação"]),
   companyId: z.number(),
+  dados: z
+    .record(z.string(), z.union([z.string(), z.number(), z.boolean()]))
+    .optional(),
 });
 
 export type SchemaDataClientType = z.infer<typeof SchemaDataClient>;

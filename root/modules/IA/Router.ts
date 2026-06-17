@@ -5,4 +5,5 @@ export function IA_Route(app: FastifyInstance) {
   app.post("/ia", ControllerIA.CreateController);
   app.delete("/ia/:id", ControllerIA.DeleteController);
   app.get("/ia", ControllerIA.FindAllController);
+  app.put("/ia", ControllerIA.UpdateController);
 }

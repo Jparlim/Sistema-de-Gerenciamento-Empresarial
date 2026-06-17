@@ -1,5 +1,5 @@
 import { Prisma } from "../../infra/database/client.js";
-import { SchemaCreateIAType } from "./schema/schemaIA.js";
+import { SchemaCreateIAType, SchemaUpdateIAType } from "./schema/schemaIA.js";
 
 export class RepositoryIA {
   async create(dados: SchemaCreateIAType, companyID: number) {
@@ -26,5 +26,12 @@ export class RepositoryIA {
 
   async findAll() {
     return await Prisma.iA.findMany();
+  }
+
+  async update(id: number, data: SchemaUpdateIAType) {
+    return await Prisma.iA.update({
+      where: { companyId: id},
+      data
+    })
   }
 }

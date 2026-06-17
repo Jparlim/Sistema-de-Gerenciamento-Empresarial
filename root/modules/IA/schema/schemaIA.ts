@@ -11,4 +11,12 @@ export const SchemaCreateIA = z.object({
   data: z.json().optional(),
 });
 
+export const SchemaUpdateIA = z.object({
+  nomeEmpresa: z.string().optional(),
+  nomeIA: z.string().optional(),
+  instructions: z.string().optional(),
+  data: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])),
+});
+
 export type SchemaCreateIAType = z.infer<typeof SchemaCreateIA>;
+export type SchemaUpdateIAType = z.infer<typeof SchemaUpdateIA>;
