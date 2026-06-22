@@ -19,11 +19,11 @@ export async function GenerateResponse(
         instruções: ${dataCompany.instructions}
         
         instruções padrão: Você deve extrair do histórico da conversa todas as informações do cliente
-        que correspondam aos campos de dataClient.
+        que correspondam aos campos de dataClient. 
 
-        Se uma informação não estiver presente, retorne null.
+        É de extrema importância que pegue os dados no inicio da conversa com o cliente.
 
-        Nunca invente dados.
+        Se uma informação não estiver presente, retorne null. Nunca invente dados.
         `,
         responseSchema: {
           type: Type.OBJECT,

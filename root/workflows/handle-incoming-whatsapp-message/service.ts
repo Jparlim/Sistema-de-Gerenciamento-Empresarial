@@ -64,6 +64,7 @@ export async function handleIncomingWhatsappMessage(
       ]),
     ),
     nome: { type: TypeMap["String"] },
+    resumo: { type: TypeMap["String"] },
   };
 
   // fromEntries = trnasforma um array de arrays em um objeto, onde cada sub-array contém uma chave e um valor.
@@ -77,13 +78,25 @@ export async function handleIncomingWhatsappMessage(
 
   await setInMemory(key, { role: "model", content: result.response });
 
-  await ServicesClient.CreateServicesWithAI({
-    nome: result.dataClient.nome || "não identificado",
-    contato: clientNumber || "não identificado",
-    status: "Em Negociação",
-    companyId: dataCompany.companyId,
-    dados: result.dataClient || null,
-  });
+  const verify = Object.entries(result.dataClient).every(
+    ([, value]) => value !== "null",
+  );
+
+  console.log(verify);
+  console.log(result.dataClient);
+
+  if (verify === true) {
+    await ServicesClient.CreateServicesWithAI({
+      nome: result.dataClient.nome || "não identificado",
+      contato: clientNumber || "não identificado",
+      status: "Em Negociação",
+      companyId: dataCompany.companyId,
+      dados: result.dataClient || null,
+      resumo: result.dataClient.resumo || "não identificado",
+    });
+  }
+
+  // verificar se está correto
 
   return result;
 }
