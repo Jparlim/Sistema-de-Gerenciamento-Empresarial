@@ -52,20 +52,15 @@ export const ServicesIA = {
   },
 
   async UpdateServices(id: number, data: SchemaUpdateIAType) {
-    // concertar a lógica para tirar apenas os dados que foram enviados, os que chegarem null ou "" não enviar para atualizar
-
     if (!data)
       throw new Error("nenhum dado foi inserido para realizar a atualização!");
 
-    if (data.data && Object.keys(data.data).length === 0)
-      console.log(data.data);
+    const filterData = Object.fromEntries(
+      Object.entries(data).filter(
+        ([, value]) => value !== "" && value !== undefined,
+      ),
+    ) as SchemaUpdateIAType;
 
-    const filterData = Object.entries(data)
-      .filter(([key, value]) => value !== "" && value !== undefined)
-      .map(([key, value]) => ({ [key]: value }));
-
-    console.log(filterData);
-
-    // return await repository.update(id, data);
+    return await repository.update(id, filterData);
   },
 };

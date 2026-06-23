@@ -1,5 +1,9 @@
 import { Prisma } from "../../infra/database/client.js";
-import { SchemaDataClientWithIAType } from "./schema/SchemaCliente.js";
+import {
+  SchemaDataClientWithIAType,
+  SchemaDataClientType,
+  SchemaDataClientUpdateType,
+} from "./schema/SchemaCliente.js";
 
 export class RepositoryClient {
   async Create(data: SchemaDataClientWithIAType) {
@@ -15,6 +19,13 @@ export class RepositoryClient {
     });
   }
 
+  async Update(id: number, data: SchemaDataClientUpdateType) {
+    return await Prisma.cliente.update({
+      where: { id: Number(id) },
+      data: data,
+    });
+  }
+
   async FindCompanyById(id: number) {
     return await Prisma.company.findUnique({
       where: {
@@ -22,6 +33,26 @@ export class RepositoryClient {
       },
       select: {
         IA: true,
+      },
+    });
+  }
+
+  async FindById(id: number) {
+    return await Prisma.cliente.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+  }
+
+  async FindAll() {
+    return await Prisma.cliente.findMany();
+  }
+
+  async Delete(id: number) {
+    return await Prisma.cliente.delete({
+      where: {
+        id: Number(id),
       },
     });
   }

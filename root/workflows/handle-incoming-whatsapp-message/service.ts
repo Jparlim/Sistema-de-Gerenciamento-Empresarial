@@ -67,9 +67,6 @@ export async function handleIncomingWhatsappMessage(
     resumo: { type: TypeMap["String"] },
   };
 
-  // fromEntries = trnasforma um array de arrays em um objeto, onde cada sub-array contém uma chave e um valor.
-  // entries = transforma um objeto em um array de arrays, onde cada sub-array contém uma chave e um valor.
-
   const result = await GenerateResponse(
     dataCompany,
     dynamicProperties,
@@ -77,6 +74,10 @@ export async function handleIncomingWhatsappMessage(
   );
 
   await setInMemory(key, { role: "model", content: result.response });
+
+
+
+  // verificar se todos os campos do dataClient são diferentes de "null"
 
   const verify = Object.entries(result.dataClient).every(
     ([, value]) => value !== "null",

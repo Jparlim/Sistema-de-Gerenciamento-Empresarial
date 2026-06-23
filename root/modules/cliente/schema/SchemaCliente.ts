@@ -9,6 +9,19 @@ export const SchemaDataClient = z.object({
   resumo: z.string(),
 });
 
+export const SchemaDataClientUpdate = z.object({
+  nome: z
+    .string()
+    .nonempty({ message: "nome do cliente deve ser inserido!" })
+    .optional(),
+  contato: z
+    .string()
+    .nonempty({ message: "número do cliente deve ser inserido!" })
+    .optional(),
+  status: z.enum(["Fechado", "Desistência", "Em Negociação"]).optional(),
+  resumo: z.string().optional(),
+});
+
 export const SchemaDataClientWithIA = z.object({
   nome: z.string().nonempty({ message: "nome do cliente deve ser inserido!" }),
   contato: z
@@ -23,3 +36,4 @@ export const SchemaDataClientWithIA = z.object({
 
 export type SchemaDataClientType = z.infer<typeof SchemaDataClient>;
 export type SchemaDataClientWithIAType = z.infer<typeof SchemaDataClientWithIA>;
+export type SchemaDataClientUpdateType = z.infer<typeof SchemaDataClientUpdate>;

@@ -30,8 +30,8 @@ export class RepositoryIA {
 
   async update(id: number, data: SchemaUpdateIAType) {
     return await Prisma.iA.update({
-      where: { companyId: id},
-      data
-    })
+      where: { companyId: id },
+      data,
+    });
   }
 }
