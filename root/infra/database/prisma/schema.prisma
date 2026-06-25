@@ -63,7 +63,7 @@ model Visits {
   endereco    String
   observacao  String
   responsavel String
-  data        DateTime
+  data        String
   hora        String
-  status      Boolean  @default(false)
+  status      String
 }
