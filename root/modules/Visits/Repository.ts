@@ -6,7 +6,7 @@ import {
 
 export class Repository {
   async Create(data: SchemaCreateVisitsType, id: number) {
-    await Prisma.visits.create({
+    return await Prisma.visits.create({
       data: { ...data, clientId: id },
     });
   }
@@ -21,29 +21,30 @@ export class Repository {
   }
 
   async Delete(id: number) {
-    await Prisma.visits.delete({
+    return await Prisma.visits.delete({
       where: {
-        id: id,
+        id: Number(id),
       },
     });
   }
 
   async FindAll() {
-    await Prisma.visits.findMany();
+    return await Prisma.visits.findMany();
   }
 
   async FindById(id: number) {
-    await Prisma.visits.findUnique({
+    return await Prisma.visits.findUnique({
       where: {
-        id: id,
+        id: Number(id),
       },
     });
   }
 
-  async FindByNumber(contato: number) {
-    // await Prisma.cliente.findUnique();
+  async FindByNumber(contato: string) {
+    return await Prisma.cliente.findUnique({
+      where: {
+        contato: contato,
+      },
+    });
   }
 }
-
-// contato: contato
-// ver se da para deixar padrão o contato do cliente como number

@@ -18,14 +18,27 @@ export const Controller = {
     if (decode.role !== "admin")
       return reply.status(403).send({ message: "Acesso negado!" });
 
-    return ServicesVisits.CreateServices(data);
+    return await ServicesVisits.CreateServices(data);
   },
 
-  async DeleteController() {},
+  async DeleteController(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as { id: number };
 
-  async FindAllController() {},
+    if (!id) return reply.status(401).send({ message: "id não fornecido!" });
+
+    return ServicesVisits.DeleteServices(id);
+  },
+
+  async FindAllController() {
+    return await ServicesVisits.FindAllServices();
+  },
 
   async UpdateController() {},
 
-  async FindByIdController() {},
+  async FindByIdController(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as { id: number };
+    if (!id) return reply.status(401).send("id não providenciado!");
+
+    return await ServicesVisits.FindByIdServices(id);
+  },
 };

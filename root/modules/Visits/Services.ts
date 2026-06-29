@@ -11,21 +11,38 @@ export const ServicesVisits = {
       "",
     );
 
-    const idClient = repository
+    const idClient = await repository.FindByNumber(formatNumber);
+
+    if (!idClient) throw new Error("cliente não encontrado!");
 
     const newData = {
       ...data,
       contato: formatNumber,
       data: formatDate,
-    //   clientId: id,
     };
 
-    return console.log(newData);
+    return await repository.Create(newData, idClient?.id!);
+  },
+
+  async DeleteServices(id: number) {
+    const verify = await repository.Delete(id);
+
+    if (!verify) throw new Error("visita não contrada para fazer a remoção!");
+
+    return verify;
   },
 
   async UpdateServices() {},
 
-  async FindAllServices() {},
+  async FindAllServices() {
+    return await repository.FindAll();
+  },
 
-  async FindByIdServices() {},
+  async FindByIdServices(id: number) {
+    const verify = await repository.FindById(id);
+
+    if (!verify) throw new Error("visita não encontrada!");
+
+    return verify;
+  },
 };

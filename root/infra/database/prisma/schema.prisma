@@ -59,7 +59,7 @@ model Visits {
   clientId    Int
   client      Cliente  @relation(fields: [clientId], references: [id])
   nome        String
-  contato     String
+  contato     String @unique
   endereco    String
   observacao  String
   responsavel String

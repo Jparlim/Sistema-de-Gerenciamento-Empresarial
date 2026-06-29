@@ -45,6 +45,14 @@ export class RepositoryClient {
     });
   }
 
+  async FindByNumber(contato: string) {
+    return await Prisma.cliente.findUnique({
+      where: {
+        contato: contato,
+      },
+    });
+  }
+
   async FindAll() {
     return await Prisma.cliente.findMany();
   }

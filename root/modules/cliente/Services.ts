@@ -14,6 +14,10 @@ export const ServicesClient = {
 
     if (!companyData) throw new Error("Dados da empresa não encontrada!");
 
+    const verify = await repository.FindByNumber(data.contato);
+
+    if (verify) throw new Error("cliente já cadastrado!");
+
     const newData = { ...data, companyId: companyId, dados: companyData.data };
 
     return await repository.Create(newData);
