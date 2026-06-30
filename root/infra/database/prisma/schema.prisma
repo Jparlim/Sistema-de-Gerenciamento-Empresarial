@@ -8,15 +8,17 @@ datasource db {
 
 model Company {
   id          Int       @id @default(autoincrement())
-  nomeEmpresa String    @unique
+  nome        String    @unique
   email       String    @unique
   senha       String
   CNPJ        String    @unique
   telefone      String    @unique
   status      Boolean   @default(true)
   saldo       Int?      @default(0)
+
   cliente     Cliente[]
   IA          IA?
+  estoque     Estoque?
 }
 
 model Company_Pending {
@@ -46,12 +48,13 @@ model Cliente {
 
 model IA {
   id           Int     @id @default(autoincrement())
-  companyId    Int @unique
-  company      Company @relation(fields: [companyId], references: [id])
   nomeEmpresa  String?
   nomeIA       String?
   instructions String?
   data         Json?
+
+  companyId    Int @unique
+  company      Company @relation(fields: [companyId], references: [id])
 }
 
 model Visits {
@@ -66,4 +69,55 @@ model Visits {
   data        String
   hora        String
   status      String
+}
+
+model Estoque {
+  id Int @id @default(autoincrement())
+
+  companyId Int @unique
+  company Company @relation(fields: [companyId], references: [id])
+
+  produtos Produto[]
+}
+
+model Produto {
+  id Int @id @default(autoincrement())
+  nome String
+  categoria String
+  quantidade Int
+  valor_unitario Float
+
+  estoqueId Int
+  estoque Estoque @relation(fields: [estoqueId], references: [id])
+
+  fornecedorId Int
+  fornecedor Fornecedor @relation(fields: [fornecedorId], references: [id])
+
+  movimentacoes MovimentacaoEstoque[]
+}
+
+model MovimentacaoEstoque {
+  id Int @id @default(autoincrement())
+
+  tipo TipoMovimentacao
+  quantidade Int
+  motivo String
+  createdAt DateTime @default(now())
+
+  produtoId Int
+  produto Produto @relation(fields: [produtoId], references: [id])
+}
+ 
+enum TipoMovimentacao {
+  ENTRADA
+  SAIDA
+}
+
+model Fornecedor {
+  id Int @id @default(autoincrement())
+  nome String
+  contato String
+  CNPJ String
+
+  produto Produto[]
 }
