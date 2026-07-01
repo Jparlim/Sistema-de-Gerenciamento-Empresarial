@@ -27,7 +27,7 @@ export class RepositoryCount {
     return await Prisma.company_Pending.findFirst({
       where: {
         OR: [
-          { nomeEmpresa: data.nomeEmpresa },
+          { nome: data.nome },
           { CNPJ: data.CNPJ },
           { telefone: data.telefone },
         ],
@@ -39,7 +39,7 @@ export class RepositoryCount {
     return await Prisma.company.findFirst({
       where: {
         OR: [
-          { nomeEmpresa: data.nomeEmpresa },
+          { nome: data.nome },
           { CNPJ: data.CNPJ },
           { telefone: data.telefone },
         ],

@@ -1,9 +1,4 @@
-import {
-  CreateAcount,
-  CreateAcountPendingType,
-  CreateAcountType,
-  UpdateAcountType,
-} from "./schema/SchemaAcount.js";
+import { UpdateAcountType } from "./schema/SchemaAcount.js";
 import { RepositoryCount } from "./Repository.js";
 import { Prisma } from "../../infra/database/client.js";
 import crypto from "crypto";
@@ -53,7 +48,7 @@ export const ServicesAcount = {
     }
 
     const userId = await repository.create({
-      nomeEmpresa: verify.nomeEmpresa!,
+      nome: verify.nome!,
       email: verify.email,
       senha: verify.senha,
       CNPJ: verify.CNPJ,

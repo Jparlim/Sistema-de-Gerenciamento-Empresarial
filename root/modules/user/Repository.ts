@@ -13,7 +13,7 @@ export class RepositoryCount {
   }
 
   async update(id: number, data: UpdateAcountType) {
-    return await Prisma.company.update({ where: { id }, data });
+    return await Prisma.company.update({ where: { id: Number(id) }, data });
   }
 
   async delete(id: number) {
@@ -24,6 +24,7 @@ export class RepositoryCount {
     return await Prisma.company.findMany({
       include: {
         IA: true,
+        estoque: true,
       },
     });
   }

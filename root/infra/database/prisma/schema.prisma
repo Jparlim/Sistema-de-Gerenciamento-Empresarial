@@ -23,7 +23,7 @@ model Company {
 
 model Company_Pending {
   id            Int      @id @default(autoincrement())
-  nomeEmpresa          String   @unique
+  nome          String   @unique
   email         String   @unique
   senha         String   @unique
   CNPJ          String   @unique

@@ -21,6 +21,7 @@ export const ServicesClient = {
     const newData = { ...data, companyId: companyId, dados: companyData.data };
 
     return await repository.Create(newData);
+    // this way to create Estoque is only test, in real project estoque will be create when the user is created
   },
 
   async CreateServicesWithAI(data: SchemaDataClientWithIAType) {

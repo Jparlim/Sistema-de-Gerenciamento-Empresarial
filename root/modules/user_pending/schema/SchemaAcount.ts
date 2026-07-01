@@ -1,9 +1,7 @@
 import z from "zod";
 
 export const CreateAcountPending = z.object({
-  nomeEmpresa: z
-    .string()
-    .nonempty({ message: "O nome da empresa é obrigatório!" }),
+  nome: z.string().nonempty({ message: "O nome da empresa é obrigatório!" }),
   email: z.string().nonempty({ message: "Email inválido!" }),
   senha: z.string().nonempty({ message: "A senha é obrigatória!" }),
   CNPJ: z.string().nonempty({ message: "O CNPJ é obrigatório!" }),
@@ -15,9 +13,7 @@ export const CreateAcountPending = z.object({
 });
 
 export const CreateAcountWithDataOnBody = z.object({
-  nomeEmpresa: z
-    .string()
-    .nonempty({ message: "O nome da empresa é obrigatório!" }),
+  nome: z.string().nonempty({ message: "O nome da empresa é obrigatório!" }),
   email: z.string().nonempty({ message: "Email inválido!" }),
   senha: z.string().nonempty({ message: "A senha é obrigatória!" }),
   CNPJ: z.string().nonempty({ message: "O CNPJ é obrigatório!" }),

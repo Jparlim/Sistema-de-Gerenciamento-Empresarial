@@ -5,10 +5,10 @@ import {
   UpdateAcount,
   CreateAcountPending,
 } from "./schema/SchemaAcount.js";
+import { ServicesEstoque } from "../estoque/Services.js";
 
 export const User_Controller = {
   async CreateUser(request: FastifyRequest, reply: FastifyReply) {
-    // const data = CreateAcount.parse(request.body);
     const { token } = request.body as { token: string };
     const cookie = request.cookies.tokenVerify as string;
 
@@ -20,9 +20,9 @@ export const User_Controller = {
       token: string;
     };
 
-    console.log(decode);
-
     const id = await ServicesAcount.CreateAcount(decode, token);
+
+    await ServicesEstoque.CreateServices(id);
 
     const tokenJwt = request.server.jwt.sign(
       { IDcompany: id, role: "admin" },
