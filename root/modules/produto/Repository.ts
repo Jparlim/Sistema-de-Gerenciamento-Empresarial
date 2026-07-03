@@ -1,7 +1,46 @@
+import { Prisma } from "../../infra/database/client.js";
+import {
+  CreateToRepositoryType,
+  UpdateToRepositoryType,
+} from "./schema/SchemaProduto.js";
+
 export class Repository {
-    async Create() {}
-    async Update() {}
-    async Delete() {}
-    async FindAll() {}
-    async FindById() {}
+  async Create(data: CreateToRepositoryType) {
+    return await Prisma.produto.create({
+      data: data,
+    });
+  }
+  async Update(data: UpdateToRepositoryType, id: number) {
+    return await Prisma.produto.update({
+      where: {
+        id: id,
+      },
+      data: data,
+    });
+  }
+  async Delete(id: number) {
+    return await Prisma.produto.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+  }
+  async FindAll() {
+    return await Prisma.produto.findMany();
+  }
+  async FindById(id: number) {
+    return await Prisma.produto.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+  }
+  async FindFornecedor(cnpj: string, contato: string) {
+    return await Prisma.fornecedor.findFirst({
+      where: {
+        CNPJ: cnpj,
+        contato: contato,
+      },
+    });
+  }
 }

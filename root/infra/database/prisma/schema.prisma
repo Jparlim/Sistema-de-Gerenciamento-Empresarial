@@ -116,8 +116,8 @@ enum TipoMovimentacao {
 model Fornecedor {
   id Int @id @default(autoincrement())
   nome String
-  contato String
-  CNPJ String
+  contato String @unique
+  CNPJ String @unique
 
   produto Produto[]
 }

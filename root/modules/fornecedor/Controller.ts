@@ -1,14 +1,14 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import { CreateToController } from "./schema/SchemaProduto.js";
-import { ServicesProduto } from "./Services.js";
+import { FastifyRequest, FastifyReply } from "fastify";
+import { CreateController } from "./schema/SchemaProduto.js";
+import { ServicesFornecedor } from "./Services.js";
 
-export const ControllerProduto = {
+export const ControllerFornecedor = {
   async CreateController(request: FastifyRequest, reply: FastifyReply) {
-    const data = CreateToController.parse(request.body);
+    const data = CreateController.parse(request.body);
     const token = request.cookies.refreshToken as string;
 
     if (!token)
-      return reply.status(401).send({ message: "token não enviado!" });
+      return reply.status(401).send({ message: "token não informado!" });
 
     const decode = request.server.jwt.decode(token) as {
       IDcompany: number;
@@ -19,12 +19,7 @@ export const ControllerProduto = {
     if (decode.role !== "admin")
       return reply.status(401).send({ message: "acesso negado!" });
 
-    return console.log({ ...data, estoqueId: decode.estoqueId });
-
-    return await ServicesProduto.CreateServices({
-      ...data,
-      estoqueId: decode.estoqueId,
-    });
+    return await ServicesFornecedor.CreateServices(data);
   },
 
   async UpdateController(request: FastifyRequest, reply: FastifyReply) {},
@@ -32,7 +27,7 @@ export const ControllerProduto = {
   async DeleteController(request: FastifyRequest, reply: FastifyReply) {},
 
   async FindAllController(request: FastifyRequest, reply: FastifyReply) {
-    return await ServicesProduto.FindAllServices();
+    return await ServicesFornecedor.FindAllServices();
   },
 
   async FindByIdController(request: FastifyRequest, reply: FastifyReply) {},
