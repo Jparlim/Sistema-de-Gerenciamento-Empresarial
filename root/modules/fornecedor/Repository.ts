@@ -1,5 +1,8 @@
 import { Prisma } from "../../infra/database/client.js";
-import { CreateControllerType } from "./schema/SchemaProduto.js";
+import {
+  CreateControllerType,
+  updateControllerType,
+} from "./schema/SchemaProduto.js";
 
 export class Repository {
   async Create(data: CreateControllerType) {
@@ -7,7 +10,14 @@ export class Repository {
       data: data,
     });
   }
-  async Update() {}
+  async Update(data: updateControllerType, id: number) {
+    return await Prisma.fornecedor.update({
+      where: {
+        id: Number(id),
+      },
+      data,
+    });
+  }
   async Delete(id: number) {
     return await Prisma.fornecedor.delete({
       where: {
@@ -19,7 +29,7 @@ export class Repository {
     return await Prisma.fornecedor.findMany();
   }
   async FindById(id: number) {
-    return await Prisma.produto.findUnique({
+    return await Prisma.fornecedor.findUnique({
       where: {
         id: Number(id),
       },

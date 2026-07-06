@@ -75,16 +75,11 @@ export async function handleIncomingWhatsappMessage(
 
   await setInMemory(key, { role: "model", content: result.response });
 
-
-
   // verificar se todos os campos do dataClient são diferentes de "null"
 
   const verify = Object.entries(result.dataClient).every(
     ([, value]) => value !== "null",
   );
-
-  console.log(verify);
-  console.log(result.dataClient);
 
   if (verify === true) {
     await ServicesClient.CreateServicesWithAI({

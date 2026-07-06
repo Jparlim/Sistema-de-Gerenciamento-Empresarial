@@ -2,9 +2,9 @@ import { FastifyInstance } from "fastify";
 import { ControllerFornecedor } from "./Controller.js";
 
 export function Fornecedor_Route(app: FastifyInstance) {
-  //   app.get("/produto");
+  app.get("/fornecedor/:id", ControllerFornecedor.FindByIdController);
   app.get("/fornecedor", ControllerFornecedor.FindAllController);
   app.post("/fornecedor", ControllerFornecedor.CreateController);
-  //   app.put("/produto");
+  app.put("/fornecedor/:id", ControllerFornecedor.UpdateController);
   //   app.delete("/produto");
 }

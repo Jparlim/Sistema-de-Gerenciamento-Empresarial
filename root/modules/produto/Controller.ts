@@ -19,8 +19,6 @@ export const ControllerProduto = {
     if (decode.role !== "admin")
       return reply.status(401).send({ message: "acesso negado!" });
 
-    return console.log({ ...data, estoqueId: decode.estoqueId });
-
     return await ServicesProduto.CreateServices({
       ...data,
       estoqueId: decode.estoqueId,

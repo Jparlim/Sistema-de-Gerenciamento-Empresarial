@@ -1,5 +1,8 @@
 import { Repository } from "./Repository.js";
-import { CreateControllerType } from "./schema/SchemaProduto.js";
+import {
+  CreateControllerType,
+  updateControllerType,
+} from "./schema/SchemaProduto.js";
 
 const repository = new Repository();
 
@@ -12,7 +15,19 @@ export const ServicesFornecedor = {
     return await repository.Create(data);
   },
 
-  async UpdateServices() {},
+  async UpdateServices(data: updateControllerType, id: number) {
+    const verify = repository.FindById(id);
+
+    if (!verify) throw new Error("fornecedor não encontrado!");
+
+    const filteredData = Object.fromEntries(
+      Object.entries(data).filter(
+        ([, value]) => value !== "" && value !== undefined,
+      ),
+    );
+
+    return await repository.Update(filteredData, id);
+  },
 
   async DeleteServices() {},
 
@@ -20,5 +35,7 @@ export const ServicesFornecedor = {
     return await repository.FindAll();
   },
 
-  async FindByIdServices() {},
+  async FindByIdServices(id: number) {
+    return await repository.FindById(id);
+  },
 };

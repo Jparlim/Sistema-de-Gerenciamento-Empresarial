@@ -38,8 +38,7 @@ export class Repository {
   async FindFornecedor(cnpj: string, contato: string) {
     return await Prisma.fornecedor.findFirst({
       where: {
-        CNPJ: cnpj,
-        contato: contato,
+        OR: [{ CNPJ: cnpj }, { contato: contato }],
       },
     });
   }
