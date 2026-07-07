@@ -42,7 +42,7 @@ export async function handleIncomingWhatsappMessage(
     });
 
   if (!dataCompany) {
-    throw new Error("Company not found for the provided number");
+    throw new Error("IA of Company not found for the provided number");
   } else if (dataCompany === undefined) {
     throw new Error("Company data is undefined");
     // criar uma IA de emergência para responder que a empresa não tem IA configurada

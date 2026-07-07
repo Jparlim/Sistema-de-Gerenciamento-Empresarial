@@ -13,7 +13,7 @@ export class Repository {
   async Update(data: UpdateToRepositoryType, id: number) {
     return await Prisma.produto.update({
       where: {
-        id: id,
+        id: Number(id),
       },
       data: data,
     });
@@ -39,6 +39,20 @@ export class Repository {
     return await Prisma.fornecedor.findFirst({
       where: {
         OR: [{ CNPJ: cnpj }, { contato: contato }],
+      },
+    });
+  }
+  async FindFornecedorById(id: number) {
+    return await Prisma.fornecedor.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+  }
+  async FindByData(nome: string, categoria: string) {
+    return await Prisma.produto.findFirst({
+      where: {
+        OR: [{ nome: nome }, { categoria: categoria }],
       },
     });
   }

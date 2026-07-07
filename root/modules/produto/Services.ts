@@ -1,4 +1,8 @@
-import { CreateToServicesType } from "./schema/SchemaProduto.js";
+import {
+  CreateToServicesType,
+  UpdateToControllerType,
+  UpdateToRepositoryType,
+} from "./schema/SchemaProduto.js";
 import { Repository } from "./Repository.js";
 
 const repository = new Repository();
@@ -13,6 +17,10 @@ export const ServicesProduto = {
     if (!idFornecedor)
       throw new Error("fornecedor não encontrado no banco de dados!");
 
+    const verify = await repository.FindByData(data.nome, data.categoria);
+
+    if (verify) throw new Error("produto já cadastrado no banco de dados!");
+
     const newDAta = {
       nome: data.nome,
       categoria: data.categoria,
@@ -22,18 +30,46 @@ export const ServicesProduto = {
       estoqueId: data.estoqueId,
     };
 
-    return console.log(newDAta);
-
     return await repository.Create(newDAta);
   },
 
-  async UpdateServices() {},
+  async UpdateServices(id: number, data: UpdateToRepositoryType) {
+    const verify = await repository.FindById(id);
+    const idFornecedor = await repository.FindFornecedorById(
+      data.fornecedorId!,
+    );
 
-  async DeleteServices() {},
+    if (!idFornecedor)
+      throw new Error("fornecedor não encontrado no banco de dados!");
+
+    if (!verify) throw new Error("produto não encontrado no banco de dados!");
+
+    const filteredData = Object.fromEntries(
+      Object.entries(data).filter(
+        ([, value]) => value !== "" && value !== undefined,
+      ),
+    );
+
+    return await repository.Update(filteredData, id);
+  },
+
+  async DeleteServices(id: number) {
+    const verify = await repository.FindById(id);
+
+    if (!verify) throw new Error("produto não encontrado no banco de dados!");
+
+    return await repository.Delete(id);
+  },
 
   async FindAllServices() {
     return await repository.FindAll();
   },
 
-  async FindByIdServices() {},
+  async FindByIdServices(id: number) {
+    const verify = await repository.FindById(id);
+
+    if (!verify) throw new Error("produto não encontrado no banco de dados!");
+
+    return await repository.FindById(id);
+  },
 };
