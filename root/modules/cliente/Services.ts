@@ -25,7 +25,15 @@ export const ServicesClient = {
   },
 
   async CreateServicesWithAI(data: SchemaDataClientWithIAType) {
-    console.log(data);
+    const verify = await repository.FindByNumber(data.contato);
+
+    if (verify) throw new Error("cliente já cadastrado!");
+
+    const regexNumber = data.nome.replace(/\D/g, "");
+
+    const newData = { ...data, contato: regexNumber };
+
+    return await repository.Create(newData);
   },
 
   async UpdateServices(id: number, data: SchemaDataClientType) {

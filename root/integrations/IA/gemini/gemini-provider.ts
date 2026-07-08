@@ -21,7 +21,8 @@ export async function GenerateResponse(
         instruções padrão: Você deve extrair do histórico da conversa todas as informações do cliente
         que correspondam aos campos de dataClient. 
 
-        É de extrema importância que pegue os dados no inicio da conversa com o cliente.
+        Antes de tudo, pergunte e pegue o nome do cliente.
+        É de extrema importância que pegue os dados desde o inicio da conversa com o cliente
 
         Se uma informação não estiver presente, retorne null. Nunca invente dados.
         `,

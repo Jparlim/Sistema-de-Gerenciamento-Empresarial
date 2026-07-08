@@ -92,7 +92,7 @@ export async function handleIncomingWhatsappMessage(
     });
   }
 
-  // verificar se está correto
+  console.log(result.dataClient);
 
   return result;
 }
