@@ -11,19 +11,14 @@ export const User_Pending_Controller = {
       request.server,
     );
 
-    return reply
-      .status(200)
-      .setCookie("tokenVerify", token.token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 15,
-      })
-      .send({
-        user: token.user,
-        token: token.token,
-      });
+    reply.status(200).setCookie("tokenVerify", token.token, {
+      httpOnly: true,
+      secure: false,
+      path: "/",
+      maxAge: 60 * 15,
+    });
+
+    return console.log("token enviado para o navegador", token.token);
   },
 
   async DeleteUserPending(request: FastifyRequest, reply: FastifyReply) {

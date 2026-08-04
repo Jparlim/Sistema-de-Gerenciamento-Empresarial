@@ -34,6 +34,7 @@ export const User_Controller = {
       { expiresIn: "7d" },
     );
 
+  
     return reply
       .setCookie("token", tokenJwt, {
         httpOnly: true,

@@ -5,12 +5,18 @@ import { Route } from "./routes.js";
 import jwt from "@fastify/jwt";
 import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
+import { ErrorHandle } from "../error/errorHandle.js";
 
 const App = fastify({ logger: true });
 
 App.register(formbody);
-App.register(Route);
-
+App.register(cors, {
+  origin: true,
+  credentials: true,
+});
+App.register(cookie, {
+  secret: process.env.COOKIE_SECRET as string,
+});
 App.register(jwt, {
   secret: process.env.JWT_SECRET as string,
 });
@@ -18,10 +24,9 @@ App.register(jwt, {
   secret: process.env.JWT_REFRESH_SECRET as string,
   namespace: "refresh",
 });
-App.register(cookie, {
-  secret: process.env.COOKIE_SECRET as string,
-});
-App.register(cors, { origin: "http://localhost:5173", credentials: true });
+App.register(ErrorHandle);
+
+App.register(Route);
 
 const start = async () => {
   try {
