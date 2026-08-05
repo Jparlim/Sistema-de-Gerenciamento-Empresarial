@@ -6,18 +6,20 @@ import {
   CreateAcountPending,
 } from "./schema/SchemaAcount.js";
 import { ServicesEstoque } from "../estoque/Services.js";
+import { VerifyTokenBody } from "./schema/SchemaAcount.js";
+import { accessCookie, refreshCookie } from "../../infra/http/cookieOptions.js";
+import { AppError } from "../../infra/error/AppError.js";
 
 export const User_Controller = {
   async CreateUser(request: FastifyRequest, reply: FastifyReply) {
-    const { token } = request.body as { token: string };
+    const { token } = VerifyTokenBody.parse(request.body);
     const cookie = request.cookies.tokenVerify as string;
 
     if (!cookie)
-      return reply.status(401).send({ message: "token não encontrado!" });
+      throw new AppError(401, "token não encontrado!");
 
     const decode = request.server.jwt.verify(cookie) as {
       id: number;
-      token: string;
     };
 
     const id = await ServicesAcount.CreateAcount(decode, token);
@@ -34,22 +36,10 @@ export const User_Controller = {
       { expiresIn: "7d" },
     );
 
-  
     return reply
-      .setCookie("token", tokenJwt, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "strict",
-        path: "/",
-        maxAge: 60 * 15,
-      })
-      .setCookie("refreshToken", refreshTokenJwt, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7,
-      })
+      .setCookie("token", tokenJwt, accessCookie)
+      .setCookie("refreshToken", refreshTokenJwt, refreshCookie)
+      .clearCookie("tokenVerify", { path: "/" })
       .send({ success: true, token: tokenJwt, refreshToken: refreshTokenJwt });
   },
 

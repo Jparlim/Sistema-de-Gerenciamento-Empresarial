@@ -4,7 +4,7 @@ const repository = new Repository();
 
 export const ServicesEstoque = {
   async CreateServices(companyId: number) {
-    const verify = await repository.FindById(companyId);
+    const verify = await repository.FindByCompanyId(companyId);
 
     if (verify) throw new Error("já existe um estoque para a empresa!");
 

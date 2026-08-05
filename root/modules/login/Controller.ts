@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { ServiceLogin } from "./Service.js";
+import { accessCookie, refreshCookie } from "../../infra/http/cookieOptions.js";
 
 export const ControllerLogin = {
   async validateUser(request: FastifyRequest, reply: FastifyReply) {
@@ -24,20 +25,8 @@ export const ControllerLogin = {
     );
 
     return reply
-      .setCookie("token", token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 15,
-      })
-      .setCookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7,
-      })
+      .setCookie("token", token, accessCookie)
+      .setCookie("refreshToken", refreshToken, refreshCookie)
       .send({ success: true, token, refreshToken });
   },
 };

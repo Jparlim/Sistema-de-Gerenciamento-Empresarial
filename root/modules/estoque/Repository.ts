@@ -30,4 +30,12 @@ export class Repository {
       },
     });
   }
+
+  async FindByCompanyId(companyId: number) {
+    return await Prisma.estoque.findUnique({
+      where: {
+        companyId: Number(companyId),
+      },
+    });
+  }
 }

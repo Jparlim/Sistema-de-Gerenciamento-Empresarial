@@ -31,6 +31,13 @@ export const UpdateAcount = z.object({
   status: z.boolean().optional(),
 });
 
+export const VerifyTokenBody = z.object({
+  token: z
+    .string()
+    .regex(/^\d{6}$/, { message: "O código deve ter 6 dígitos!" }),
+});
+
 export type CreateAcountPendingType = z.infer<typeof CreateAcountPending>;
 export type CreateAcountType = z.infer<typeof CreateAcount>;
 export type UpdateAcountType = z.infer<typeof UpdateAcount>;
+export type VerifyTokenBodyType = z.infer<typeof VerifyTokenBody>;

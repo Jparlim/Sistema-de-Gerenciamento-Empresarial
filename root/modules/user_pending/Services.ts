@@ -4,6 +4,7 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { FastifyInstance } from "fastify";
 import { Prisma } from "../../infra/database/client.js";
+import { AppError } from "../../infra/error/AppError.js";
 
 const repository = new RepositoryCount();
 
@@ -17,7 +18,7 @@ export const ServicesAcount = {
     const verify_pending = await repository.findFirstCompanyExists(data);
 
     if (verify || verify_pending) {
-      throw new Error("Empresa já cadastrada!");
+      throw new AppError(409, "Empresa já cadastrada!");
     }
 
     const tokenSend = crypto.randomInt(100000, 1000000).toString();
@@ -36,14 +37,36 @@ export const ServicesAcount = {
     const tokenJWT = token.jwt.sign(
       {
         id: IdPending.id,
-        token: tokenSend,
       },
       {
-        expiresIn: "5m",
+        expiresIn: "15m",
       },
     );
 
-    return { token: tokenJWT, user: IdPending };
+    return { token: tokenJWT, user: IdPending, codigo: tokenSend };
+  },
+
+  async ResendToken(pendingId: number, token: FastifyInstance) {
+    const pending = await repository.findById(pendingId);
+
+    if (!pending) throw new AppError(404, "cadastro pendente não encontrado!");
+
+    const tokenSend = crypto.randomInt(100000, 1000000).toString();
+
+    await Prisma.company_Pending.update({
+      where: { id: pendingId },
+      data: {
+        token: tokenSend,
+        token_expires: new Date(Date.now() + 15 * 60 * 1000),
+      },
+    });
+
+    const tokenJWT = token.jwt.sign(
+      { id: pendingId },
+      { expiresIn: "15m" },
+    );
+
+    return { token: tokenJWT, user: pending, codigo: tokenSend };
   },
 
   async DeleteAcount(id: number) {

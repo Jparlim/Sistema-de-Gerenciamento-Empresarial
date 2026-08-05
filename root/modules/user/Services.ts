@@ -2,15 +2,16 @@ import { UpdateAcountType } from "./schema/SchemaAcount.js";
 import { RepositoryCount } from "./Repository.js";
 import { Prisma } from "../../infra/database/client.js";
 import crypto from "crypto";
+import { AppError } from "../../infra/error/AppError.js";
 
 const repository = new RepositoryCount();
 
 export const ServicesAcount = {
-  async CreateAcount(data: { id: number; token: string }, token: string) {
+  async CreateAcount(data: { id: number }, token: string) {
     const verify = await repository.findByIdPending(data.id);
 
     if (!verify)
-      throw new Error("Ocorreu um erro! empresa não foi encontrada!");
+      throw new AppError(404, "Ocorreu um erro! empresa não foi encontrada!");
 
     if (token !== verify.token) {
       const newToken = crypto.randomInt(100000, 1000000).toString();
@@ -25,8 +26,9 @@ export const ServicesAcount = {
         },
       });
 
-      throw new Error(
-        "token inválido! outro token será gerado e enviado para seu email!",
+      throw new AppError(
+        400,
+        "token inválido! outro token foi gerado, use o botão de reenviar código.",
       );
     }
 
@@ -43,8 +45,10 @@ export const ServicesAcount = {
         },
       });
 
-      throw new Error("token expirou! outro token será enviado para seu email");
-      // enviar token para email
+      throw new AppError(
+        400,
+        "token expirou! use o botão de reenviar código.",
+      );
     }
 
     const userId = await repository.create({

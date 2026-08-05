@@ -11,8 +11,9 @@ const App = fastify({ logger: true });
 
 App.register(formbody);
 App.register(cors, {
-  origin: true,
+  origin: process.env.CORS_ORIGIN?.split(",") ?? true,
   credentials: true,
+  methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 });
 App.register(cookie, {
   secret: process.env.COOKIE_SECRET as string,
@@ -24,7 +25,7 @@ App.register(jwt, {
   secret: process.env.JWT_REFRESH_SECRET as string,
   namespace: "refresh",
 });
-App.register(ErrorHandle);
+ErrorHandle(App);
 
 App.register(Route);
 
