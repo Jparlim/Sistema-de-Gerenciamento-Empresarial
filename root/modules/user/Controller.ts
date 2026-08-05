@@ -1,10 +1,6 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import { ServicesAcount } from "./Services.js";
-import {
-  CreateAcount,
-  UpdateAcount,
-  CreateAcountPending,
-} from "./schema/SchemaAcount.js";
+import { UpdateAcount } from "./schema/SchemaAcount.js";
 import { ServicesEstoque } from "../estoque/Services.js";
 import { VerifyTokenBody } from "./schema/SchemaAcount.js";
 import { accessCookie, refreshCookie } from "../../infra/http/cookieOptions.js";
@@ -15,8 +11,7 @@ export const User_Controller = {
     const { token } = VerifyTokenBody.parse(request.body);
     const cookie = request.cookies.tokenVerify as string;
 
-    if (!cookie)
-      throw new AppError(401, "token não encontrado!");
+    if (!cookie) throw new AppError(401, "token não encontrado!");
 
     const decode = request.server.jwt.verify(cookie) as {
       id: number;
