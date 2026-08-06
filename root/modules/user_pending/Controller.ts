@@ -13,10 +13,7 @@ export const User_Pending_Controller = {
       request.server,
     );
 
-    request.log.info(
-      { codigo: result.codigo },
-      "código de verificação gerado",
-    );
+    request.log.info({ codigo: result.codigo }, "código de verificação gerado");
 
     return reply
       .status(200)
@@ -35,17 +32,11 @@ export const User_Pending_Controller = {
     const cookie = request.cookies.tokenVerify as string;
 
     if (!cookie)
-      throw new AppError(
-        401,
-        "sessão de cadastro expirou, refaça o cadastro",
-      );
+      throw new AppError(401, "sessão de cadastro expirou, refaça o cadastro");
 
     const decode = request.server.jwt.verify(cookie) as { id: number };
 
-    const result = await ServicesAcount.ResendToken(
-      decode.id,
-      request.server,
-    );
+    const result = await ServicesAcount.ResendToken(decode.id, request.server);
 
     request.log.info(
       { codigo: result.codigo },

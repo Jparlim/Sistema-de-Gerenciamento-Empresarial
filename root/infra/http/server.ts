@@ -9,12 +9,12 @@ import { ErrorHandle } from "../error/errorHandle.js";
 
 const App = fastify({ logger: true });
 
-App.register(formbody);
 App.register(cors, {
   origin: process.env.CORS_ORIGIN?.split(",") ?? true,
   credentials: true,
   methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 });
+App.register(formbody);
 App.register(cookie, {
   secret: process.env.COOKIE_SECRET as string,
 });
@@ -32,7 +32,10 @@ App.register(Route);
 const start = async () => {
   try {
     await App.listen({ port: 8888, host: "0.0.0.0" });
-    console.log("✓ Servidor rodando em http://localhost:8888");
+    console.log(
+      `Back-end:  ${process.env.SERVER_ORIGIN?.split(",")}
+      Front-end: ${process.env.CORS_ORIGIN?.split(",")}`,
+    );
   } catch (error) {
     App.log.error(error);
     process.exit(1);
