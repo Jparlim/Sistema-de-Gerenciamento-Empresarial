@@ -54,8 +54,8 @@ export const ServicesClient = {
     return await repository.Delete(id);
   },
 
-  async FindAllServices() {
-    return await repository.FindAll();
+  async FindAllServices(companyId: number) {
+    return await repository.FindAll(companyId);
   },
 
   async FindByIdServices(id: number) {

@@ -53,8 +53,10 @@ export class RepositoryClient {
     });
   }
 
-  async FindAll() {
-    return await Prisma.cliente.findMany();
+  async FindAll(companyId: number) {
+    return await Prisma.cliente.findMany({
+      where: { companyId },
+    });
   }
 
   async Delete(id: number) {

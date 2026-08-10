@@ -59,8 +59,18 @@ export const ControllerClient = {
 
     return await ServicesClient.DeleteServices(id);
   },
-  async FindAllController() {
-    return await ServicesClient.FindAllServices();
+  async FindAllController(request: FastifyRequest, reply: FastifyReply) {
+    const token = request.cookies.refreshToken as string;
+
+    if (!token)
+      return reply.status(401).send({ message: "token não encontrado! " });
+
+    const decode = request.server.jwt.verify(token) as {
+      IDcompany: number;
+      role: string;
+    };
+
+    return await ServicesClient.FindAllServices(decode.IDcompany);
   },
   async FindByIdController(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as { id: number };

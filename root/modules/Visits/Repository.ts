@@ -20,16 +20,30 @@ export class Repository {
     });
   }
 
-  async Delete(id: number) {
-    return await Prisma.visits.delete({
+  async Delete(id: number, companyId: number) {
+    const { count } = await Prisma.visits.deleteMany({
       where: {
         id: Number(id),
+        client: { companyId },
       },
     });
+
+    return count > 0;
   }
 
-  async FindAll() {
-    return await Prisma.visits.findMany();
+  async FindAll(companyId: number, year?: number, month?: number) {
+    const monthPrefix =
+      year && month
+        ? `${year}-${String(month).padStart(2, "0")}`
+        : undefined;
+
+    return await Prisma.visits.findMany({
+      where: {
+        client: { companyId },
+        ...(monthPrefix ? { data: { startsWith: monthPrefix } } : {}),
+      },
+      orderBy: [{ data: "asc" }, { hora: "asc" }],
+    });
   }
 
   async FindById(id: number) {
