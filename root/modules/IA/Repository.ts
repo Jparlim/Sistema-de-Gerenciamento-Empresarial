@@ -28,6 +28,12 @@ export class RepositoryIA {
     return await Prisma.iA.findMany();
   }
 
+  async findByCompany(companyId: number) {
+    return await Prisma.iA.findUnique({
+      where: { companyId },
+    });
+  }
+
   async update(id: number, data: SchemaUpdateIAType) {
     return await Prisma.iA.update({
       where: { companyId: id },

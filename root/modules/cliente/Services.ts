@@ -43,7 +43,7 @@ export const ServicesClient = {
       ),
     ) as SchemaDataClientType;
 
-    await repository.Update(id, filterData);
+    return await repository.Update(id, filterData);
   },
 
   async DeleteServices(id: number) {

@@ -40,7 +40,17 @@ export const ControllerIA = {
   },
 
   async FindAllController(request: FastifyRequest, reply: FastifyReply) {
-    return await ServicesIA.FindAllServices();
+    const token = request.cookies.refreshToken as string;
+
+    if (!token)
+      return reply.status(401).send({ message: "token não encontrado!" });
+
+    const decode = request.server.jwt.verify(token) as {
+      IDcompany: number;
+      role: string;
+    };
+
+    return await ServicesIA.FindByCompanyServices(decode.IDcompany);
   },
 
   async UpdateController(request: FastifyRequest, reply: FastifyReply) {

@@ -51,6 +51,10 @@ export const ServicesIA = {
     return await repository.findAll();
   },
 
+  async FindByCompanyServices(companyId: number) {
+    return await repository.findByCompany(companyId);
+  },
+
   async UpdateServices(id: number, data: SchemaUpdateIAType) {
     if (!data)
       throw new Error("nenhum dado foi inserido para realizar a atualização!");
