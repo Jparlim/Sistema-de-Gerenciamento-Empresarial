@@ -15,6 +15,7 @@ export class RepositoryClient {
         status: data.status,
         companyId: data.companyId,
         dados: data.dados!,
+        valorPotencial: data.valorPotencial,
       },
     });
   }

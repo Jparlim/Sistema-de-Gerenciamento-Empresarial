@@ -61,8 +61,8 @@ export const ServicesProduto = {
     return await repository.Delete(id);
   },
 
-  async FindAllServices() {
-    return await repository.FindAll();
+  async FindAllServices(estoqueId: number) {
+    return await repository.FindAll(estoqueId);
   },
 
   async FindByIdServices(id: number) {

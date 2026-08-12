@@ -14,11 +14,12 @@ model Company {
   CNPJ        String    @unique
   telefone      String    @unique
   status      Boolean   @default(true)
-  saldo       Int?      @default(0)
+  saldo       Float?    @default(0)
 
   cliente     Cliente[]
   IA          IA?
   estoque     Estoque?
+  movimentacoes MovimentacaoFinanceira[]
 }
 
 model Company_Pending {
@@ -43,6 +44,7 @@ model Cliente {
   dados     Json?
   resumo    String
   status    String
+  valorPotencial Float? @default(0)
   visits    Visits[]
 }
 
@@ -111,6 +113,16 @@ model MovimentacaoEstoque {
 enum TipoMovimentacao {
   ENTRADA
   SAIDA
+}
+
+model MovimentacaoFinanceira {
+  id        Int              @id @default(autoincrement())
+  companyId Int
+  company   Company          @relation(fields: [companyId], references: [id])
+  tipo      TipoMovimentacao
+  descricao String
+  valor     Float
+  createdAt DateTime         @default(now())
 }
 
 model Fornecedor {

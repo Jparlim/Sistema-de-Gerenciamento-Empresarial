@@ -78,7 +78,18 @@ export const ControllerProduto = {
   },
 
   async FindAllController(request: FastifyRequest, reply: FastifyReply) {
-    return await ServicesProduto.FindAllServices();
+    const token = request.cookies.refreshToken as string;
+
+    if (!token)
+      return reply.status(401).send({ message: "token não enviado!" });
+
+    const decode = request.server.jwt.decode(token) as {
+      IDcompany: number;
+      role: string;
+      estoqueId: number;
+    };
+
+    return await ServicesProduto.FindAllServices(decode.estoqueId);
   },
 
   async FindByIdController(request: FastifyRequest, reply: FastifyReply) {

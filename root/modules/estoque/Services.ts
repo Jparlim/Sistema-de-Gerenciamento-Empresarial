@@ -28,4 +28,8 @@ export const ServicesEstoque = {
   async FindByIdServices(companyId: number) {
     return await repository.FindById(companyId);
   },
+
+  async FindByCompanyIdServices(companyId: number) {
+    return await repository.FindByCompanyId(companyId);
+  },
 };

@@ -7,6 +7,10 @@ export const SchemaDataClient = z.object({
     .nonempty({ message: "número do cliente deve ser inserido!" }),
   status: z.enum(["Fechado", "Desistência", "Em Negociação"]),
   resumo: z.string(),
+  valorPotencial: z
+    .number()
+    .nonnegative({ message: "valor potencial deve ser maior ou igual a 0!" })
+    .optional(),
 });
 
 export const SchemaDataClientUpdate = z.object({
@@ -32,6 +36,7 @@ export const SchemaDataClientWithIA = z.object({
   dados: z.any().nullable(),
   // arrumar a tipagem do "dados", para fins de testes, coloquei como any
   resumo: z.string(),
+  valorPotencial: z.number().nonnegative().optional(),
 });
 
 export type SchemaDataClientType = z.infer<typeof SchemaDataClient>;
