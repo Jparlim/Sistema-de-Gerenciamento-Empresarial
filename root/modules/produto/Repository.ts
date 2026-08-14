@@ -25,8 +25,8 @@ export class Repository {
       },
     });
   }
-  async FindAll(estoqueId: number) {
-    return await Prisma.produto.findMany({ where: { estoqueId } });
+  async FindAll() {
+    return await Prisma.produto.findMany();
   }
   async FindById(id: number) {
     return await Prisma.produto.findUnique({

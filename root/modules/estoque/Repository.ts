@@ -28,6 +28,9 @@ export class Repository {
       where: {
         id: Number(id),
       },
+      include: {
+        produtos: true,
+      },
     });
   }
 
