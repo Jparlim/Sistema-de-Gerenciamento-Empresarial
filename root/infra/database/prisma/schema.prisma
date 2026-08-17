@@ -6,6 +6,12 @@ datasource db {
   provider = "postgresql"
 }
 
+model Admin {
+  id Int @id @default(autoincrement())
+  email String @unique
+  senha String @unique
+}
+
 model Company {
   id          Int       @id @default(autoincrement())
   nome        String    @unique
@@ -15,6 +21,7 @@ model Company {
   telefone      String    @unique
   status      Boolean   @default(true)
   saldo       Float?    @default(0)
+  row String @default("user")
 
   cliente     Cliente[]
   IA          IA?

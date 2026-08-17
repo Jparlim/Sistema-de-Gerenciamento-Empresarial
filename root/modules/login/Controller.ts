@@ -12,12 +12,13 @@ export const ControllerLogin = {
 
     const estoque = await ServicesEstoque.FindByCompanyIdServices(data);
 
-    if (!estoque) throw new AppError(500, "estoque não encontrado para a empresa!");
+    if (!estoque)
+      throw new AppError(500, "estoque não encontrado para a empresa!");
 
     const token = request.server.jwt.sign(
       {
         IDcompany: data,
-        role: "admin",
+        role: "user",
         estoqueId: estoque.id,
       },
       { expiresIn: "30m" },
@@ -26,7 +27,7 @@ export const ControllerLogin = {
     const refreshToken = request.server.jwt.sign(
       {
         IDcompany: data,
-        role: "admin",
+        role: "user",
         estoqueId: estoque.id,
       },
       { expiresIn: "7d" },

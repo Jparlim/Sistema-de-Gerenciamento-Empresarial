@@ -22,13 +22,13 @@ export const User_Controller = {
     const estoqueId = await ServicesEstoque.CreateServices(id);
 
     const tokenJwt = request.server.jwt.sign(
-      { IDcompany: id, role: "admin", estoqueId: estoqueId.id },
-      { expiresIn: "30m" },
+      { IDcompany: id, role: "user", estoqueId: estoqueId.id },
+      { expiresIn: "7d" },
     );
 
     const refreshTokenJwt = request.server.jwt.sign(
-      { IDcompany: id, role: "admin", estoqueId: estoqueId.id },
-      { expiresIn: "7d" },
+      { IDcompany: id, role: "user", estoqueId: estoqueId.id },
+      { expiresIn: "30min" },
     );
 
     return reply
