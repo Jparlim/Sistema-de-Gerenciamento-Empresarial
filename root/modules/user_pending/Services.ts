@@ -21,7 +21,7 @@ export const ServicesAcount = {
     try {
       const formatedCNPJ = data.CNPJ.replace(/\D/g, "");
 
-      // console.log("CNPJ formatado:", formatedCNPJ);
+      console.log("CNPJ formatado:", formatedCNPJ);
 
       const ResponseOfAPI = await fetch(
         `https://receitaws.com.br/v1/cnpj/${formatedCNPJ}`,
@@ -32,8 +32,6 @@ export const ServicesAcount = {
           },
         },
       );
-
-      console.log(ResponseOfAPI);
 
       if (ResponseOfAPI.status === 400) {
         throw new AppError(401, "CNPJ inválido!");

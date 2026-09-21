@@ -37,10 +37,11 @@ export class Repository {
       },
     });
   }
-  async FindById(id: number) {
+  async FindById(estoqueId: number, id: number) {
     return await Prisma.produto.findUnique({
       where: {
         id: Number(id),
+        estoqueId: estoqueId,
       },
     });
   }

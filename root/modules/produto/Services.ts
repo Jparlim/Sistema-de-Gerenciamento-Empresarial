@@ -1,6 +1,5 @@
 import {
   CreateToServicesType,
-  UpdateToControllerType,
   UpdateToRepositoryType,
 } from "./schema/SchemaProduto.js";
 import { Repository } from "./Repository.js";
@@ -33,8 +32,8 @@ export const ServicesProduto = {
     return await repository.Create(newDAta);
   },
 
-  async UpdateServices(id: number, data: UpdateToRepositoryType) {
-    const verify = await repository.FindById(id);
+  async UpdateServices(estoqueId: number, id: number, data: UpdateToRepositoryType) {
+    const verify = await repository.FindById(estoqueId, id);
     const idFornecedor = await repository.FindFornecedorById(
       data.fornecedorId!,
     );
@@ -53,8 +52,8 @@ export const ServicesProduto = {
     return await repository.Update(filteredData, id);
   },
 
-  async DeleteServices(id: number) {
-    const verify = await repository.FindById(id);
+  async DeleteServices(estoqueId: number, id: number) {
+    const verify = await repository.FindById(estoqueId, id);
 
     if (!verify) throw new Error("produto não encontrado no banco de dados!");
 
@@ -65,11 +64,11 @@ export const ServicesProduto = {
     return await repository.FindAllByEstoque(estoqueId);
   },
 
-  async FindByIdServices(id: number) {
-    const verify = await repository.FindById(id);
+  async FindByIdServices(estoqueId: number, id: number) {
+    const verify = await repository.FindById(estoqueId, id);
 
     if (!verify) throw new Error("produto não encontrado no banco de dados!");
 
-    return await repository.FindById(id);
+    return await repository.FindById(estoqueId, id);
   },
 };
