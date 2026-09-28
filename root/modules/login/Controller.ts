@@ -46,7 +46,8 @@ export const ControllerLogin = {
 
     const token = request.server.jwt.sign(
       {
-        IDcompany: userId,
+        email: email,
+        id: userId,
         role: "admin",
       },
       { expiresIn: "30m" },
@@ -54,7 +55,8 @@ export const ControllerLogin = {
 
     const refreshToken = request.server.jwt.sign(
       {
-        IDcompany: userId,
+        email: email,
+        id: userId,
         role: "admin",
       },
       { expiresIn: "7d" },
