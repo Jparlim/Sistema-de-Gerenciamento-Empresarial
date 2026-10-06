@@ -2,7 +2,6 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { ServiceAdm } from "./Services.js";
 
 interface UpdateAdminRequest {
-  idToUpdate: number | undefined;
   newEmail: string | undefined;
   newPassword: string | undefined;
 }
@@ -56,16 +55,11 @@ export const ControllerAdm = {
     if (decode.role !== "admin")
       return reply.status(403).send({ message: "ação negada!" });
 
-    const result = await ServiceAdm.FindAllAdmins(decode.id);
-
-    return reply.status(200).send({
-      message: "Lista de administradores",
-      data: result,
-    });
+    return await ServiceAdm.FindAllAdmins(decode.id);
   },
 
   async deleteController(request: FastifyRequest, reply: FastifyReply) {
-    const { idToDelete } = request.body as {
+    const { idToDelete } = request.params as {
       idToDelete: number;
     };
     const token = request.cookies.refreshToken as string;
@@ -91,6 +85,9 @@ export const ControllerAdm = {
 
   async updateController(request: FastifyRequest, reply: FastifyReply) {
     const data = request.body as UpdateAdminRequest;
+    const { idToUpdate } = request.params as {
+      idToUpdate: number;
+    };
     const token = request.cookies.refreshToken as string;
 
     if (!token)
@@ -107,7 +104,7 @@ export const ControllerAdm = {
 
     const result = await ServiceAdm.updateAdmin(
       decode.id,
-      data.idToUpdate!,
+      idToUpdate!,
       data.newEmail!,
       data.newPassword!,
     );
