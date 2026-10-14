@@ -1,5 +1,6 @@
 import { SendEmailCommand } from "@aws-sdk/client-ses";
-import { sesClient } from "../../../integrations/aws/ses/client.js";
+import { sesClient } from "../../ses/client/index.js";
+import "dotenv/config";
 
 interface SendEmailDTO {
   to: string;

@@ -1,5 +1,4 @@
 {
-  "name": "whatsia",
   "version": "1.0.0",
   "type": "module",
   "description": "",
@@ -7,7 +6,8 @@
   "scripts": {
     "estudio": "npx prisma studio",
     "dev": "tsx watch --env-file .env root/infra/http/server.ts",
-    "seed": "node ./prisma/seed/index.ts"
+    "seed": "node ./prisma/seed/index.ts",
+    "env-email": "tsx ./root/modules/email/service.ts"
   },
   "keywords": [],
   "author": "",
@@ -31,7 +31,7 @@
     "@fastify/cors": "^11.1.0",
     "@fastify/formbody": "^8.0.2",
     "@fastify/jwt": "^10.0.0",
-    "@google/genai": "^1.17.0",
+    "@google/genai": "^2.29.1",
     "@google/generative-ai": "^0.24.1",
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^7.4.0",

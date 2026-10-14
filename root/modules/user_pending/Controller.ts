@@ -1,8 +1,9 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import { ServicesAcount } from "./Services.js";
 import { CreateAcountWithDataOnBody } from "./schema/SchemaAcount.js";
 import { verifyCookie } from "../../infra/http/cookieOptions.js";
 import { AppError } from "../../infra/error/AppError.js";
+import { sendVerificationCodeEmail } from "../../workflows/handleEmail/SendVerificationCode/index.js";
 
 export const User_Pending_Controller = {
   async CreateUserPending(request: FastifyRequest, reply: FastifyReply) {
@@ -10,9 +11,7 @@ export const User_Pending_Controller = {
 
     const result = await ServicesAcount.CreateAcountPending(data);
 
-    await ServicesAcount.CreateAcountPending(data);
-
-    request.log.info({ codigo: result.codigo }, "código de verificação gerado");
+    await sendVerificationCodeEmail(result.user.email, result.codigo);
 
     const tokenJWT = request.server.jwt.sign(
       {

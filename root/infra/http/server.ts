@@ -10,7 +10,7 @@ import { ErrorHandle } from "../error/errorHandle.js";
 const App = fastify({ logger: true });
 
 App.register(cors, {
-  origin: process.env.CORS_ORIGIN?.split(",") ?? true,
+  origin: true,
   credentials: true,
   methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 });

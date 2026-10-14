@@ -10,12 +10,16 @@ const repository = new RepositoryCount();
 
 export const ServicesAcount = {
   async CreateAcountPending(data: CreateAcountPendingOfBodyType) {
-    const verify = await repository.findFirst(data);
+    const userPendente = await repository.findFirst(data);
 
-    const verify_pending = await repository.findFirstCompanyExists(data);
+    const userCadastrado = await repository.findFirstCompanyExists(data);
 
-    if (verify || verify_pending) {
+    if (userCadastrado) {
       throw new AppError(409, "Empresa já cadastrada!");
+    }
+
+    if (userPendente) {
+      throw new AppError(409, "Empresa pendente para finalização de cadastro!");
     }
 
     try {

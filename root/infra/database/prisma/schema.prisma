@@ -10,6 +10,7 @@ model Admin {
   id Int @id @default(autoincrement())
   email String @unique
   senha String @unique
+  role String @default("admin")
 }
 
 model Company {
@@ -18,10 +19,10 @@ model Company {
   email       String    @unique
   senha       String
   CNPJ        String    @unique
-  telefone      String    @unique
+  telefone    String    @unique
   status      Boolean   @default(true)
   saldo       Float?    @default(0)
-  row String @default("user")
+  role  String @default("user")
 
   cliente     Cliente[]
   IA          IA?
