@@ -38,7 +38,6 @@ export const htmlTemplate = `
               overflow: hidden;
             "
           >
-            <!-- Cabeçalho -->
             <tr>
               <td
                 align="center"

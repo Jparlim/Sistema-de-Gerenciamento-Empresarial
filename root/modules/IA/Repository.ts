@@ -16,10 +16,11 @@ export class RepositoryIA {
     });
   }
 
-  async delete(id: number) {
-    return await Prisma.iA.delete({
+  async delete(id: number, companyId: number) {
+    return await Prisma.iA.deleteMany({
       where: {
-        id: Number(id),
+        id,
+        companyId,
       },
     });
   }

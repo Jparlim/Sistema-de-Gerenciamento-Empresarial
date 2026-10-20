@@ -1,12 +1,10 @@
 import { CookieSerializeOptions } from "@fastify/cookie";
 
-const isProd = process.env.NODE_ENV === "production";
-
 const base: CookieSerializeOptions = {
   httpOnly: true,
+  secure: false,
+  sameSite: "lax",
   path: "/",
-  secure: isProd,
-  sameSite: isProd ? "none" : "lax",
 };
 
 export const verifyCookie: CookieSerializeOptions = {

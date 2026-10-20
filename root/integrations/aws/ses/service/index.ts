@@ -21,7 +21,7 @@ export async function sendEmail({ to, subject, text, html }: SendEmailDTO) {
     Destination: {
       ToAddresses: [to],
     },
-    Message: {
+      Message: {
       Subject: {
         Charset: "UTF-8",
         Data: subject,

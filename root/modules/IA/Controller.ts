@@ -1,67 +1,55 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyRequest } from "fastify";
 import { SchemaCreateIA, SchemaUpdateIA } from "./schema/schemaIA.js";
 import { ServicesIA } from "./Services.js";
+import { AppError } from "../../infra/error/AppError.js";
+
+type CompanyToken = {
+  IDcompany: number;
+  role: string;
+};
+
+function getCompanyId(request: FastifyRequest): number {
+  const token = request.cookies.refreshToken;
+
+  if (!token) throw new AppError(401, "token não encontrado!");
+
+  const decoded = request.server.jwt.verify(token) as Partial<CompanyToken>;
+  const companyId = decoded.IDcompany;
+
+  if (
+    decoded.role !== "user" ||
+    typeof companyId !== "number" ||
+    !Number.isSafeInteger(companyId) ||
+    companyId <= 0
+  ) {
+    throw new AppError(403, "Acesso negado!");
+  }
+
+  return companyId;
+}
 
 export const ControllerIA = {
-  async CreateController(request: FastifyRequest, reply: FastifyReply) {
+  async CreateController(request: FastifyRequest) {
     const data = SchemaCreateIA.parse(request.body);
-    const token = request.cookies.refreshToken as string;
-
-    if (!token)
-      return reply.status(401).send({ message: "token não encontrado!" });
-
-    const decode = request.server.jwt.verify(token) as {
-      IDcompany: number;
-      role: string;
-    };
-
-    return await ServicesIA.CreateServices(data, decode.IDcompany);
+    return await ServicesIA.CreateServices(data, getCompanyId(request));
   },
 
-  async DeleteController(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as { id: number };
-    const token = request.cookies.refreshToken as string;
+  async DeleteController(request: FastifyRequest) {
+    const rawId = (request.params as { id: string }).id;
+    const id = Number(rawId);
 
-    if (!token)
-      return reply.status(401).send({ message: "token não encontrado!" });
+    if (!Number.isSafeInteger(id) || id <= 0)
+      throw new AppError(400, "Identificador de configuração inválido!");
 
-    const decode = request.server.jwt.verify(token) as {
-      IDcompany: number;
-      role: string;
-    };
-
-    return await ServicesIA.DeleteServices(id);
+    return await ServicesIA.DeleteServices(id, getCompanyId(request));
   },
 
-  async FindAllController(request: FastifyRequest, reply: FastifyReply) {
-    const token = request.cookies.refreshToken as string;
-
-    if (!token)
-      return reply.status(401).send({ message: "token não encontrado!" });
-
-    const decode = request.server.jwt.verify(token) as {
-      IDcompany: number;
-      role: string;
-    };
-
-    if (decode.role !== "admin")
-      return reply.status(403).send({ message: "Acesso negado!" });
-
-    return await ServicesIA.FindByCompanyServices(decode.IDcompany);
+  async FindAllController(request: FastifyRequest) {
+    return await ServicesIA.FindByCompanyServices(getCompanyId(request));
   },
 
-  async UpdateController(request: FastifyRequest, reply: FastifyReply) {
+  async UpdateController(request: FastifyRequest) {
     const data = SchemaUpdateIA.parse(request.body);
-    const token = request.cookies.refreshToken as string;
-
-    if (!token)
-      return reply.status(401).send({ message: "token não encontrado!" });
-
-    const decode = request.server.jwt.verify(token) as {
-      IDcompany: number;
-      role: string;
-    };
-
-    return await ServicesIA.UpdateServices(decode.IDcompany, data);
+    return await ServicesIA.UpdateServices(getCompanyId(request), data);
   },
 };

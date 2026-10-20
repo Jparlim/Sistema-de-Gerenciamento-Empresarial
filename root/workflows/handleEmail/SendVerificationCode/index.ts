@@ -18,7 +18,7 @@ Se você não solicitou essa verificação, ignore este e-mail. Sua conta contin
 
 Atenciosamente,
 Equipe Quantyum`;
-  const html = htmlTemplate.replace("{{ code }}", code);
+  const html = htmlTemplate.replace("{{code}}", code);
 
   //   algo simples por enquanto
 

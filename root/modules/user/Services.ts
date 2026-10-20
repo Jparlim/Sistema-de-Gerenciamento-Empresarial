@@ -3,6 +3,7 @@ import { RepositoryCount } from "./Repository.js";
 import { Prisma } from "../../infra/database/client.js";
 import crypto from "crypto";
 import { AppError } from "../../infra/error/AppError.js";
+import { sendVerificationCodeEmail } from "../../workflows/handleEmail/SendVerificationCode/index.js";
 
 const repository = new RepositoryCount();
 
@@ -26,6 +27,8 @@ export const ServicesAcount = {
         },
       });
 
+      await sendVerificationCodeEmail(verify.email, newToken);
+
       throw new AppError(
         400,
         "token inválido! outro token foi gerado, use o botão de reenviar código.",
@@ -45,10 +48,7 @@ export const ServicesAcount = {
         },
       });
 
-      throw new AppError(
-        400,
-        "token expirou! use o botão de reenviar código.",
-      );
+      throw new AppError(400, "token expirou! use o botão de reenviar código.");
     }
 
     const userId = await repository.create({

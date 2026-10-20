@@ -5,6 +5,13 @@ import { accessCookie, refreshCookie } from "../../infra/http/cookieOptions.js";
 import { AppError } from "../../infra/error/AppError.js";
 
 export const ControllerLogin = {
+  async logout(_request: FastifyRequest, reply: FastifyReply) {
+    return reply
+      .clearCookie("token", { path: "/" })
+      .clearCookie("refreshToken", { path: "/" })
+      .send({ success: true });
+  },
+
   async validateUser(request: FastifyRequest, reply: FastifyReply) {
     const { email, senha } = request.body as { email: string; senha: string };
 

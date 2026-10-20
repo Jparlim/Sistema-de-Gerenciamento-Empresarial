@@ -1,12 +1,7 @@
-import { GoogleGenAI, Type } from "@google/genai";
-import dotenv from "dotenv";
 import { Prisma } from "../../infra/database/client.js";
 import { SchemaCreateIAType, SchemaUpdateIAType } from "./schema/schemaIA.js";
 import { RepositoryIA } from "./Repository.js";
-import { Message } from "twilio/lib/twiml/MessagingResponse.js";
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-dotenv.config();
+import { AppError } from "../../infra/error/AppError.js";
 
 const repository = new RepositoryIA();
 
@@ -33,18 +28,14 @@ export const ServicesIA = {
     return await repository.create(data, companyID);
   },
 
-  async DeleteServices(id: number) {
-    const verify = await Prisma.iA.findUnique({
-      where: {
-        id: Number(id),
-      },
-    });
+  async DeleteServices(id: number, companyId: number) {
+    const result = await repository.delete(id, companyId);
 
-    if (!verify) {
-      throw new Error("Configuração de IA não encontrada!");
+    if (result.count === 0) {
+      throw new AppError(404, "Configuração de IA não encontrada!");
     }
 
-    return await repository.delete(id);
+    return { success: true };
   },
 
   async FindAllServices() {
