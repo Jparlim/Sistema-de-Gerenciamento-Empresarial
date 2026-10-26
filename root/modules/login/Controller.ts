@@ -12,6 +12,31 @@ export const ControllerLogin = {
       .send({ success: true });
   },
 
+  async forgotPassword(request: FastifyRequest, reply: FastifyReply) {
+    const { email } = request.body as { email: string };
+
+    await ServiceLogin.forgotPassword(email);
+    return reply.send({ success: true });
+  },
+
+  async newPassword(request: FastifyRequest, reply: FastifyReply) {
+    const { pass } = request.body as { pass: string };
+    const { token } = request.params as { token: string };
+
+    if (!pass) {
+      throw new AppError(
+        404,
+        "é necessário uma nova senha para a redefinição!",
+      );
+    }
+
+    if (!token) {
+      throw new AppError(404, "token não fornecido ou não encontrado!");
+    }
+
+    await ServiceLogin.createNewPassword(pass, token);
+  },
+
   async validateUser(request: FastifyRequest, reply: FastifyReply) {
     const { email, senha } = request.body as { email: string; senha: string };
 

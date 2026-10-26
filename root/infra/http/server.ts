@@ -12,7 +12,6 @@ const App = fastify({ logger: true });
 App.register(cors, {
   origin: true,
   credentials: true,
-  methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 });
 App.register(formbody);
 App.register(cookie, {

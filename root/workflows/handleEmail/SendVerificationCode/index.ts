@@ -1,6 +1,6 @@
 import { AppError } from "../../../infra/error/AppError.js";
 import { sendEmail } from "../../../integrations/aws/ses/service/index.js";
-import { htmlTemplate } from "./htmlTemplate.js";
+import { htmlTemplate } from "./html.js";
 
 export async function sendVerificationCodeEmail(to: string, code: string) {
   const subject = "Verificação de segurança — Seu código de acesso";

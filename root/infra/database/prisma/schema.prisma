@@ -13,6 +13,14 @@ model Admin {
   role String @default("admin")
 }
 
+model ForgotPassword {
+  id Int @id @default(autoincrement())
+  email String @unique
+  token String
+  token_expires DateTime
+  created_at DateTime @default(now())
+}
+
 model Company {
   id          Int       @id @default(autoincrement())
   nome        String    @unique
