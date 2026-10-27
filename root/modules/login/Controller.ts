@@ -20,10 +20,10 @@ export const ControllerLogin = {
   },
 
   async newPassword(request: FastifyRequest, reply: FastifyReply) {
-    const { pass } = request.body as { pass: string };
-    const { token } = request.params as { token: string };
+    const { pass1, pass2 } = request.body as { pass1: string; pass2: string };
+    const { token } = request.query as { token?: string };
 
-    if (!pass) {
+    if (!pass1 || !pass2) {
       throw new AppError(
         404,
         "é necessário uma nova senha para a redefinição!",
@@ -34,7 +34,30 @@ export const ControllerLogin = {
       throw new AppError(404, "token não fornecido ou não encontrado!");
     }
 
-    await ServiceLogin.createNewPassword(pass, token);
+    const userData = await ServiceLogin.createNewPassword(pass1, pass2, token);
+
+    const tokenJWT = request.server.jwt.sign(
+      {
+        IDcompany: userData.id,
+        role: "user",
+        estoqueId: userData.estoque?.id,
+      },
+      { expiresIn: "30m" },
+    );
+
+    const refreshToken = request.server.jwt.sign(
+      {
+        IDcompany: userData.id,
+        role: "user",
+        estoqueId: userData.estoque?.id,
+      },
+      { expiresIn: "7d" },
+    );
+
+    return reply
+      .setCookie("token", tokenJWT, accessCookie)
+      .setCookie("refreshToken", refreshToken, refreshCookie)
+      .send({ success: true, token, refreshToken });
   },
 
   async validateUser(request: FastifyRequest, reply: FastifyReply) {
