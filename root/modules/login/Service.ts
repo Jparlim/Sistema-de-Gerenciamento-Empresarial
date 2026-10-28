@@ -1,10 +1,11 @@
 import { RepositoryLogin } from "./Repository.js";
 import bcrypt from "bcrypt";
-import { randomBytes, createHash } from "node:crypto";
+import { randomBytes, createHash, timingSafeEqual } from "node:crypto";
 import { AppError } from "../../infra/error/AppError.js";
 import { sendForgotPasswordEmail } from "../../workflows/handleEmail/forgotpassword/index.js";
 import dotenv from "dotenv";
 import { URL } from "node:url";
+import { buffer } from "node:stream/consumers";
 dotenv.config();
 
 const repository = new RepositoryLogin();
@@ -70,6 +71,7 @@ export const ServiceLogin = {
 
       const resetUrl = new URL("/reset-password", frontEndUrl);
       resetUrl.searchParams.set("token", verifyIfExistOnForgotPassword.token);
+      resetUrl.searchParams.set("email", verifyIfExistOnForgotPassword.email);
 
       return await sendForgotPasswordEmail(email, resetUrl.toString());
     }
@@ -88,6 +90,7 @@ export const ServiceLogin = {
 
     const resetUrl = new URL("/reset-password", frontEndUrl);
     resetUrl.searchParams.set("token", token);
+    resetUrl.searchParams.set("email", email);
 
     return await sendForgotPasswordEmail(email, resetUrl.toString());
   },
@@ -96,11 +99,18 @@ export const ServiceLogin = {
     passwordOne: string,
     passwordTwo: string,
     token: string,
+    email: string,
   ) {
-    const validate = await repository.findForgotPasswordEntry(token);
+    const tokenHash = createHash("sha256").update(token).digest("hex");
 
-    if (!validate) {
-      throw new AppError(404, "token não correspondente!");
+    const user = await repository.findForgotPasswordEntry(tokenHash);
+
+    if (!user) {
+      throw new AppError(404, "usuario não encontrado no banco!");
+    }
+
+    if (tokenHash !== user?.token) {
+      throw new AppError(404, "token inválido!");
     }
 
     if (passwordOne !== passwordTwo) {
@@ -109,6 +119,7 @@ export const ServiceLogin = {
 
     const passwordHash = await bcrypt.hash(passwordOne, 10);
 
-    return await repository.changePassword(validate.email, passwordHash);
+    await repository.deleteForgotPasswor(email, tokenHash);
+    return await repository.changePassword(email, passwordHash);
   },
 };

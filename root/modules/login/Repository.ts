@@ -1,4 +1,3 @@
-import { email } from "zod";
 import { Prisma } from "../../infra/database/client.js";
 
 export class RepositoryLogin {
@@ -32,11 +31,10 @@ export class RepositoryLogin {
     });
   }
 
-  async findForgotPasswordEntry(token?: string, email?: string) {
+  async findForgotPasswordEntry(token?: string) {
     return await Prisma.forgotPassword.findFirst({
       where: {
         token: token,
-        email: email,
       },
     });
   }
@@ -59,6 +57,15 @@ export class RepositoryLogin {
       },
       include: {
         estoque: true,
+      },
+    });
+  }
+
+  async deleteForgotPasswor(email: string, token: string) {
+    return await Prisma.forgotPassword.delete({
+      where: {
+        email: email,
+        token: token,
       },
     });
   }

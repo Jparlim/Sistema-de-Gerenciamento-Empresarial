@@ -22,6 +22,7 @@ export const ControllerLogin = {
   async newPassword(request: FastifyRequest, reply: FastifyReply) {
     const { pass1, pass2 } = request.body as { pass1: string; pass2: string };
     const { token } = request.query as { token?: string };
+    const { email } = request.query as { email?: string };
 
     if (!pass1 || !pass2) {
       throw new AppError(
@@ -34,7 +35,12 @@ export const ControllerLogin = {
       throw new AppError(404, "token não fornecido ou não encontrado!");
     }
 
-    const userData = await ServiceLogin.createNewPassword(pass1, pass2, token);
+    const userData = await ServiceLogin.createNewPassword(
+      pass1,
+      pass2,
+      token,
+      email!,
+    );
 
     const tokenJWT = request.server.jwt.sign(
       {
