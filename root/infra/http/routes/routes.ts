@@ -17,14 +17,12 @@ import { middlewareValidatorAdm } from "../middleware/middlewareADM.js";
 
 export async function Route(app: FastifyInstance) {
   app.register(Login_Route);
+
   app.register(User_Route);
   app.register(User_pending_Route);
   app.register(sendWhatsappTwilio);
 
-  app.register(Router_Adm, {
-    prefix: "/adms",
-    preHandler: middlewareValidatorAdm,
-  });
+  app.register(Router_Adm);
   app.register(IA_Route);
   app.register(Cliente_Route);
   app.register(Visits_Route);
@@ -32,4 +30,16 @@ export async function Route(app: FastifyInstance) {
   app.register(Produto_Route);
   app.register(Fornecedor_Route);
   app.register(Financeiro_Route);
+
+  // criar rotas definidas para owner e admin
+  // após isso, reformular/criar middleware de acordo com as necessidades das rotas
+  // criar roles para casa empresa. ex: colaborador, proprietario, administrador(talvez)
+
+  /*
+    Ajustar o login e a proteção das rotas: verificar se o Admin está ativo e diferenciar OWNER de ADMIN.
+    Enviar convite: somente OWNER; criar AdminInvite, guardar o hash do token e enviar o link com validade de 24 horas.
+    Aceitar convite: validar o token, criar o Admin com senha em hash e preencher acceptedAt, na mesma transação.
+    Cancelar ou reenviar: preencher revokedAt no convite anterior; no reenvio, criar outro.
+    Registrar as ações: salvar quem fez o quê em AdminAuditLog. 
+  */
 }

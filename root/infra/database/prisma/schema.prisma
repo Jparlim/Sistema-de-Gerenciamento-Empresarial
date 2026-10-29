@@ -6,11 +6,72 @@ datasource db {
   provider = "postgresql"
 }
 
+enum AdminRole {
+  OWNER
+  ADMIN
+}
+
+enum AdminAuditAction {
+  ADMIN_INVITED
+  ADMIN_INVITE_REVOKED
+  ADMIN_INVITE_ACCEPTED
+  ADMIN_DEACTIVATED
+  ADMIN_REACTIVATED
+  COMPANY_DEACTIVATED
+  COMPANY_REACTIVATED
+}
+
+model AdminAuditLog {
+  id Int @id @default(autoincrement())
+  action AdminAuditAction
+  createdAt DateTime @default(now())
+
+  actorId Int 
+  actor Admin @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  companyId Int
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  targetType String
+  targetId Int
+  details Json?
+
+  @@index([createdAt])
+  @@index([actorId, createdAt])
+  @@index([companyId, createdAt])
+  @@index([targetType, targetId])
+}
+
 model Admin {
   id Int @id @default(autoincrement())
+  nome String
   email String @unique
-  senha String @unique
-  role String @default("admin")
+  senha String 
+  role AdminRole @default(ADMIN)
+  ativo Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  lastLoginAt DateTime?
+
+  convitesEnviados AdminInvite[]
+  atividades      AdminAuditLog[]
+}
+
+model AdminInvite {
+  id          Int       @id @default(autoincrement())
+  email       String
+  tokenHash   String    @unique
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  revokedAt   DateTime?
+
+  invitedById Int
+  invitedBy Admin @relation( fields: [invitedById], references: [id], onDelete: Restrict)
+
+  @@index([email])
+  @@index([invitedById])
+  @@index([expiresAt])
 }
 
 model ForgotPassword {
@@ -30,8 +91,13 @@ model Company {
   telefone    String    @unique
   status      Boolean   @default(true)
   saldo       Float?    @default(0)
-  role  String @default("user")
+  role        String    @default("user")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  lastLoginAt DateTime?
+  statusReason String?
 
+  adminActivities AdminAuditLog[]
   cliente     Cliente[]
   IA          IA?
   estoque     Estoque?
