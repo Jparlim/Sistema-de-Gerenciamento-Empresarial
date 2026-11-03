@@ -33,7 +33,7 @@ export async function Route(app: FastifyInstance) {
 
   // criar rotas definidas para owner e admin
   // após isso, reformular/criar middleware de acordo com as necessidades das rotas
-  // criar roles para casa empresa. ex: colaborador, proprietario, administrador(talvez)
+  // criar roles para cada empresa. ex: colaborador, proprietario, administrador(talvez)
 
   /*
     Ajustar o login e a proteção das rotas: verificar se o Admin está ativo e diferenciar OWNER de ADMIN.

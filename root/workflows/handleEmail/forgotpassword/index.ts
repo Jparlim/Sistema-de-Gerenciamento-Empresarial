@@ -2,7 +2,7 @@ import { AppError } from "../../../infra/error/AppError.js";
 import { sendEmail } from "../../../integrations/aws/ses/service/index.js";
 import { htmlTemplate } from "./html.js";
 
-export async function sendForgotPasswordEmail(to: string, url: URL) {
+export async function sendForgotPasswordEmail(to: string, url: string) {
   const subject = "Recuperação de senha — Seu código de acesso";
   const text = ``;
   const html = htmlTemplate.replace("{{resetPasswordUrl}}", url);
