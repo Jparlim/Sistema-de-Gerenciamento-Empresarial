@@ -3,37 +3,45 @@ import { repositoryManagement } from "./repository.js";
 const repository = new repositoryManagement();
 
 export const ServiceManagement = {
-  async consultAllCompanysService() {
-    const amount = await repository.consultAllCompanys();
-    return amount.length;
-  },
+  async consultCompanysService(id: number) {
+    const verifyAdmin = await repository.consultAdmin(id);
 
-  async consultActivateCompanysService() {
-    const amount = await repository.consultActivateCompanys();
-    return amount.length;
-  },
+    if (!verifyAdmin) {
+      throw new Error("Administrador não encontrado.");
+    }
 
-  async consultDesactivateCompanysService() {
-    const amount = await repository.consultCompanyInactivated();
-    return amount.length;
-  },
-
-  async consultHowManyCompanys_pendingService() {
-    const amount = await repository.consultCompanysPending();
-    return amount.length;
-  },
-
-  async consultCompanysActivatedService() {
-    const amount = await repository.consultCompanysActivated();
-    return amount.length;
-  },
-
-  async consultCompanysInactivatedService() {
-    const amount = await repository.consultCompanyInactivated();
-    return amount.length;
+    const companys = await repository.consultAllCompanys();
+    return {
+      totalCompanies: companys.length,
+      activeCompanies: companys.filter((company) => company.status === true)
+        .length,
+      inactiveCompanies: companys.filter((company) => company.status === false)
+        .length,
+      newCompaniesThisMonth: companys.filter((company) => {
+        return (
+          company.createdAt >=
+          new Date(new Date().setDate(new Date().getDate() - 30))
+        );
+      }).length,
+      pendingCompanies: await repository.consultCompanysPending(),
+      growth: [],
+      recentCompanies: companys
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+        .slice(0, 5),
+    };
   },
 
   async consultAdminMeService(id: number) {
     return await repository.consultAdmin(id);
   },
 };
+
+// {
+//   totalCompanies: number;          // total de empresas
+//   activeCompanies: number;         // empresas ativas
+//   inactiveCompanies: number;       // empresas desativadas
+//   newCompaniesThisMonth: number;   // novos cadastros no mês atual
+//   pendingCompanies: number | null; // cadastros aguardando confirmação
+//   growth: { month: string; count: number }[]; // evolução mensal
+//   recentCompanies: Company[];      // empresas cadastradas recentemente
+// }

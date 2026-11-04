@@ -2,41 +2,23 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { ServiceManagement } from "./services.js";
 
 export const companyManagement = {
-  async consultAllCompanysController(
+  async consultCompanysController(
     request: FastifyRequest,
     reply: FastifyReply,
   ) {
-    return await ServiceManagement.consultAllCompanysService();
-  },
-  async consultActivateCompanysController(
-    request: FastifyRequest,
-    reply: FastifyReply,
-  ) {
-    return await ServiceManagement.consultActivateCompanysService();
-  },
-  async consultDesactivateCompanysController(
-    request: FastifyRequest,
-    reply: FastifyReply,
-  ) {
-    return await ServiceManagement.consultDesactivateCompanysService();
-  },
-  async consultHowManyCompanys_pendingController(
-    request: FastifyRequest,
-    reply: FastifyReply,
-  ) {
-    return await ServiceManagement.consultHowManyCompanys_pendingService();
-  },
-  async consultCompanysActivatedController(
-    request: FastifyRequest,
-    reply: FastifyReply,
-  ) {
-    return await ServiceManagement.consultCompanysActivatedService();
-  },
-  async consultCompanysInactivatedController(
-    request: FastifyRequest,
-    reply: FastifyReply,
-  ) {
-    return await ServiceManagement.consultCompanysInactivatedService();
+    const token = request.cookies.refreshToken as string;
+
+    if (!token) {
+      throw new Error("Token de autenticação não encontrado.");
+    }
+
+    const decode = request.server.jwt.decode(token) as {
+      id: number;
+      email: string;
+      role: string;
+    };
+
+    return await ServiceManagement.consultCompanysService(decode.id);
   },
 
   async consultAdminMeController(request: FastifyRequest, reply: FastifyReply) {

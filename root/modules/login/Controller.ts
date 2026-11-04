@@ -107,8 +107,8 @@ export const ControllerLogin = {
 
     const token = request.server.jwt.sign(
       {
-        email: email,
         id: userId.id,
+        email: email,
         role: userId.role,
       },
       { expiresIn: "30m" },
