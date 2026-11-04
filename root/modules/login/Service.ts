@@ -5,7 +5,6 @@ import { AppError } from "../../infra/error/AppError.js";
 import { sendForgotPasswordEmail } from "../../workflows/handleEmail/forgotpassword/index.js";
 import dotenv from "dotenv";
 import { URL } from "node:url";
-import { buffer } from "node:stream/consumers";
 dotenv.config();
 
 const repository = new RepositoryLogin();
@@ -30,11 +29,13 @@ export const ServiceLogin = {
   async validateAdmin(email: string, senha: string) {
     const verify = await repository.findAdminByEmail(email);
 
-    if (senha !== verify?.senha) {
+    const passwordHash = await bcrypt.compare(senha, verify!.senha!);
+
+    if (!passwordHash) {
       throw new AppError(401, "Email ou senha inválidos!");
     }
 
-    return verify.id;
+    return verify!;
   },
 
   async forgotPassword(email: string) {

@@ -108,8 +108,8 @@ export const ControllerLogin = {
     const token = request.server.jwt.sign(
       {
         email: email,
-        id: userId,
-        role: "admin",
+        id: userId.id,
+        role: userId.role,
       },
       { expiresIn: "30m" },
     );
@@ -117,8 +117,8 @@ export const ControllerLogin = {
     const refreshToken = request.server.jwt.sign(
       {
         email: email,
-        id: userId,
-        role: "admin",
+        id: userId.id,
+        role: userId.role,
       },
       { expiresIn: "7d" },
     );

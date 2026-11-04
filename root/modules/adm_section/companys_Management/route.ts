@@ -1,9 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { companyManagement } from "./controller.js";
-import {
-  middlewareValidatorAdm,
-  middlewareValidatorOwner,
-} from "../../../infra/http/middleware/Admin/index.js";
+import { middlewareValidatorAdm } from "../../../infra/http/middleware/Admin/index.js";
 
 export function manageCompanys_route(app: FastifyInstance) {
   app.get(
@@ -45,5 +42,11 @@ export function manageCompanys_route(app: FastifyInstance) {
       preHandler: middlewareValidatorAdm,
     },
     companyManagement.consultCompanysInactivatedController,
+  );
+
+  app.get(
+    "/admin/me",
+    { preHandler: middlewareValidatorAdm },
+    companyManagement.consultAdminMeController,
   );
 }

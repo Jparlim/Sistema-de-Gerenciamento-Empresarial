@@ -32,4 +32,8 @@ export const ServiceManagement = {
     const amount = await repository.consultCompanyInactivated();
     return amount.length;
   },
+
+  async consultAdminMeService(id: number) {
+    return await repository.consultAdmin(id);
+  },
 };

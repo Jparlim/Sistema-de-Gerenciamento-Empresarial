@@ -38,4 +38,28 @@ export const companyManagement = {
   ) {
     return await ServiceManagement.consultCompanysInactivatedService();
   },
+
+  async consultAdminMeController(request: FastifyRequest, reply: FastifyReply) {
+    const token = request.cookies.refreshToken as string;
+
+    const decode = request.server.jwt.decode(token) as {
+      id: number;
+      email: string;
+      role: string;
+    };
+
+    const user = await ServiceManagement.consultAdminMeService(decode.id);
+
+    return reply.send({
+      admin: {
+        id: user?.id,
+        nome: user?.nome,
+        email: user?.email,
+        role: user?.role,
+        ativo: user?.ativo,
+        createdAt: user?.createdAt,
+        lastLoginAt: null,
+      },
+    });
+  },
 };
