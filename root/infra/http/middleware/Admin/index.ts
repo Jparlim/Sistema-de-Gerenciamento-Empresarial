@@ -39,7 +39,7 @@ export async function middlewareValidatorOwner(
   rep: FastifyReply,
 ) {
   try {
-    const token = req.cookies.token as string;
+    const token = req.cookies.refreshToken as string;
 
     if (!token)
       return rep.status(401).send({ message: "token não encontrado! " });

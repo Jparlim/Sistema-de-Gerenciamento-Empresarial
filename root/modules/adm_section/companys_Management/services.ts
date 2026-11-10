@@ -1,15 +1,40 @@
+import { AppError } from "../../../infra/error/AppError.js";
 import { repositoryManagement } from "./repository.js";
 
 const repository = new repositoryManagement();
 
+interface ConsultCompanysFilteredService {
+  id: number;
+  nome: string;
+  email: string;
+  CNPJ: string;
+  telefone: string | null;
+  status: boolean;
+  statusReason: string | null;
+  createdAt: Date;
+  lastLoginAt: Date | null;
+}
+
+interface ConsultCompanyById {
+  id: number;
+  nome: string;
+  email: string;
+  CNPJ: string;
+  telefone: string;
+  status: boolean;
+  statusReason: string | null;
+  createdAt: Date;
+  lastLoginAt: Date | null;
+  saldo: number;
+  IA: {
+    nomeEmpresa: string | null;
+    nomeIA: string | null;
+    instructions: string | null;
+  } | null;
+}
+
 export const ServiceManagement = {
-  async consultCompanysService(id: number) {
-    const verifyAdmin = await repository.consultAdmin(id);
-
-    if (!verifyAdmin) {
-      throw new Error("Administrador não encontrado.");
-    }
-
+  async consultCompanysService() {
     const companys = await repository.consultAllCompanys();
     return {
       totalCompanies: companys.length,
@@ -34,14 +59,49 @@ export const ServiceManagement = {
   async consultAdminMeService(id: number) {
     return await repository.consultAdmin(id);
   },
-};
 
-// {
-//   totalCompanies: number;          // total de empresas
-//   activeCompanies: number;         // empresas ativas
-//   inactiveCompanies: number;       // empresas desativadas
-//   newCompaniesThisMonth: number;   // novos cadastros no mês atual
-//   pendingCompanies: number | null; // cadastros aguardando confirmação
-//   growth: { month: string; count: number }[]; // evolução mensal
-//   recentCompanies: Company[];      // empresas cadastradas recentemente
-// }
+  async consultCompanysFilteredService(
+    search?: string,
+    status?: "ACTIVE" | "INACTIVE",
+    from?: Date,
+    to?: Date,
+  ) {
+    const statusMap = {
+      ACTIVE: true,
+      INACTIVE: false,
+    };
+
+    const isActiveStatus = statusMap[status!];
+
+    const companys: ConsultCompanysFilteredService[] =
+      await repository.consultCompanysFiltered(
+        search,
+        isActiveStatus,
+        from,
+        to,
+      );
+
+    return {
+      items: companys,
+      total: companys.length,
+      page: 1,
+      pageSize: 10,
+    };
+  },
+
+  async consultCompanyByIdService(id?: number) {
+    const data = await repository.consultCompanyById(id);
+
+    return data as ConsultCompanyById;
+  },
+
+  async desativarCompanyByIdService(id?: number) {
+    const verify = await repository.consultCompanyById(id);
+
+    if (!verify) {
+      throw new AppError(404, "empresa não encontrada para a desativação!");
+    }
+
+    return await repository.desativarCompanyById(id);
+  },
+};

@@ -1,3 +1,4 @@
+import { TrunkContextImpl } from "twilio/lib/rest/routes/v2/trunk.js";
 import { Prisma } from "../../../infra/database/client.js";
 
 export class repositoryManagement {
@@ -15,13 +16,55 @@ export class repositoryManagement {
     return await Prisma.company_Pending.findMany();
   }
 
-  async consultCompanyInactivated() {
+  async consultCompanysFiltered(
+    search?: string,
+    status?: boolean,
+    from?: Date,
+    to?: Date,
+  ) {
     return await Prisma.company.findMany({
       where: {
+        nome: search,
+        email: search,
+        CNPJ: search,
+        status: status,
         createdAt: {
-          gte: new Date(new Date().setDate(new Date().getDate() - 30)),
+          gte: from,
+          lte: to,
         },
-        status: false,
+      },
+    });
+  }
+
+  async consultCompanyById(id?: number) {
+    return await Prisma.company.findUnique({
+      where: { id: Number(id) },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        CNPJ: true,
+        telefone: true,
+        status: true,
+        statusReason: true,
+        createdAt: true,
+        lastLoginAt: true,
+        saldo: true,
+        IA: {
+          select: {
+            nomeEmpresa: true,
+            nomeIA: true,
+            instructions: true,
+          },
+        },
+      },
+    });
+  }
+
+  async desativarCompanyById(id?: number) {
+    return await Prisma.company.delete({
+      where: {
+        id: Number(id),
       },
     });
   }

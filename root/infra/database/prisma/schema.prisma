@@ -120,7 +120,7 @@ model Company_Pending {
 model Cliente {
   id        Int      @id @default(autoincrement())
   companyId Int
-  company   Company  @relation(fields: [companyId], references: [id])
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   nome      String?
   contato   String   @unique
   date      DateTime @default(now())
@@ -139,13 +139,13 @@ model IA {
   data         Json?
 
   companyId    Int @unique
-  company      Company @relation(fields: [companyId], references: [id])
+  company      Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 }
 
 model Visits {
   id          Int      @id @default(autoincrement())
   clientId    Int
-  client      Cliente  @relation(fields: [clientId], references: [id])
+  client      Cliente  @relation(fields: [clientId], references: [id], onDelete: Cascade)
   nome        String
   contato     String
   endereco    String
@@ -160,7 +160,7 @@ model Estoque {
   id Int @id @default(autoincrement())
 
   companyId Int @unique
-  company Company @relation(fields: [companyId], references: [id])
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   produtos Produto[]
 }
@@ -173,10 +173,10 @@ model Produto {
   valor_unitario Float
 
   estoqueId Int
-  estoque Estoque @relation(fields: [estoqueId], references: [id])
+  estoque Estoque @relation(fields: [estoqueId], references: [id], onDelete: Cascade)
 
   fornecedorId Int
-  fornecedor Fornecedor @relation(fields: [fornecedorId], references: [id])
+  fornecedor Fornecedor @relation(fields: [fornecedorId], references: [id], onDelete: Cascade )
 
   movimentacoes MovimentacaoEstoque[]
 }
@@ -190,7 +190,7 @@ model MovimentacaoEstoque {
   createdAt DateTime @default(now())
 
   produtoId Int
-  produto Produto @relation(fields: [produtoId], references: [id])
+  produto Produto @relation(fields: [produtoId], references: [id], onDelete: Cascade)
 }
  
 enum TipoMovimentacao {
@@ -201,7 +201,7 @@ enum TipoMovimentacao {
 model MovimentacaoFinanceira {
   id        Int              @id @default(autoincrement())
   companyId Int
-  company   Company          @relation(fields: [companyId], references: [id])
+  company   Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
   tipo      TipoMovimentacao
   descricao String
   valor     Float
@@ -223,8 +223,8 @@ model GerenciamentoFornecedor {
   companyId Int
   fornecedorId Int
 
-  fornecedor Fornecedor @relation(fields: [fornecedorId], references: [id])
-  company Company @relation(fields: [companyId], references: [id])
+  fornecedor Fornecedor @relation(fields: [fornecedorId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@unique([companyId, fornecedorId])
 }

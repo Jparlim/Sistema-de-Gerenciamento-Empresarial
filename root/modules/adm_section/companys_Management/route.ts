@@ -14,4 +14,22 @@ export function manageCompanys_route(app: FastifyInstance) {
     { preHandler: middlewareValidatorAdm },
     companyManagement.consultAdminMeController,
   );
+
+  app.get(
+    "/admin/companies",
+    { preHandler: middlewareValidatorAdm },
+    companyManagement.consultCompanysFilteredController,
+  );
+
+  app.get(
+    "/admin/companies/:id",
+    { preHandler: middlewareValidatorAdm },
+    companyManagement.consultCompanyByIdController,
+  );
+
+  app.patch(
+    "/admin/companies/:id/status",
+    { preHandler: middlewareValidatorAdm },
+    companyManagement.desativarCompanyByIdController,
+  );
 }
