@@ -5,7 +5,9 @@ export const CreateToController = z.object({
   categoria: z
     .string()
     .nonempty({ message: "categoria do produto deve ser inserido!" }),
-  quantidade: z.int().nonnegative("deve ser inserido um número mínimo de 0!"),
+  quantidade: z
+    .number()
+    .nonnegative("deve ser inserido um número mínimo de 0!"),
   valor_unitario: z
     .float32()
     .nonnegative("deve ser inserido um número mínimo de 0!"),

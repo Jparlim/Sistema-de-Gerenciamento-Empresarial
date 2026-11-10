@@ -1,7 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { ServiceManagement } from "./services.js";
 import { AppError } from "../../../infra/error/AppError.js";
-import { success } from "zod";
 
 export const companyManagement = {
   async consultCompanysController(

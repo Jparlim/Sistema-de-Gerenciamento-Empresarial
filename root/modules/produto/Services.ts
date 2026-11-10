@@ -13,6 +13,8 @@ export const ServicesProduto = {
       data.contatoFornecedor,
     );
 
+    // console.log(idFornecedor);
+
     if (!idFornecedor)
       throw new Error("fornecedor não encontrado no banco de dados!");
 
@@ -32,7 +34,11 @@ export const ServicesProduto = {
     return await repository.Create(newDAta);
   },
 
-  async UpdateServices(estoqueId: number, id: number, data: UpdateToRepositoryType) {
+  async UpdateServices(
+    estoqueId: number,
+    id: number,
+    data: UpdateToRepositoryType,
+  ) {
     const verify = await repository.FindById(estoqueId, id);
     const idFornecedor = await repository.FindFornecedorById(
       data.fornecedorId!,
