@@ -18,8 +18,6 @@ export const inviteManagement = {
       pageSize?: number;
     };
 
-    console.log(status, search);
-
     const invites = await serviceManagement.consultInvitesService(
       search,
       status,

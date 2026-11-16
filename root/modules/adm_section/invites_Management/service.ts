@@ -7,17 +7,17 @@ enum statusOption {
   REVOKED = "REVOKED",
 }
 
-interface teste1 {
+interface invitedByIdODT {
   id: number;
   nome: string;
   email: string;
 }
 
-interface teste {
+interface inviteODT {
   id: number;
   email: string;
   invitedById: number;
-  invitedBy: teste1;
+  invitedBy: invitedByIdODT;
   createdAt: Date;
   expiresAt: Date;
   acceptedAt: Date | null;
@@ -52,7 +52,7 @@ export const serviceManagement = {
         break;
     }
 
-    const formatData: teste[] = data?.map((invite) => ({
+    const formatData: inviteODT[] = data?.map((invite) => ({
       ...invite,
       invitedBy: {
         id: invite.invitedBy.id,
