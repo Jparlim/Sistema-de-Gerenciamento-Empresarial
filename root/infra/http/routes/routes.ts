@@ -12,6 +12,7 @@ import { Financeiro_Route } from "../../../modules/financeiro/Router.js";
 import { Router_Adm } from "../../../modules/adm/Router.js";
 import { manageCompanys_route } from "../../../modules/adm_section/companys_Management/route.js";
 import { manageAdmin_route } from "../../../modules/adm_section/Admin_Management/route.js";
+import { invites_route } from "../../../modules/adm_section/invites_Management/route.js";
 
 import { sendWhatsappTwilio } from "../../../integrations/whatsapp/twilio/send-whatsapp.js";
 
@@ -24,6 +25,7 @@ export async function Route(app: FastifyInstance) {
   app.register(User_pending_Route);
   app.register(sendWhatsappTwilio);
 
+  app.register(invites_route);
   app.register(manageAdmin_route);
   app.register(manageCompanys_route);
   app.register(Router_Adm);
