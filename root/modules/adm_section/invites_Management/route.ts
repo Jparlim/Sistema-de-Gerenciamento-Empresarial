@@ -8,4 +8,10 @@ export function invites_route(app: FastifyInstance) {
     { preHandler: middlewareValidatorOwner },
     inviteManagement.consultInvitesController,
   );
+
+  app.post(
+    "/admin/invites",
+    { preHandler: middlewareValidatorOwner },
+    inviteManagement.createInviteController,
+  );
 }

@@ -33,7 +33,7 @@ export function ErrorHandle(app: FastifyInstance) {
 
     return reply.status(500).send({
       statusCode: 500,
-      message: err.message,
+      message: "Erro interno do servidor.",
     });
   });
 }

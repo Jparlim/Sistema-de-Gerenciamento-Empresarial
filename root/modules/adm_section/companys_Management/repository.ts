@@ -1,5 +1,6 @@
 import { TrunkContextImpl } from "twilio/lib/rest/routes/v2/trunk.js";
 import { Prisma } from "../../../infra/database/client.js";
+import { id } from "zod/v4/locales";
 
 export class repositoryManagement {
   async consultAdmin(id: number) {
@@ -33,6 +34,7 @@ export class repositoryManagement {
           lte: to,
         },
       },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
     });
   }
 

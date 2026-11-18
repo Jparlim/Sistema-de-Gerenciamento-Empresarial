@@ -1,33 +1,48 @@
-import { Prisma } from "../../../infra/database/client.js";
-
-interface actorIdODT {
-  id: number;
-  nome: string;
-  email: string;
-}
+import type { Prisma as PrismaTypes } from "@prisma/client";
+import { Prisma as PrismaClient } from "../../../infra/database/client.js";
+import {
+  AuditLogQuery,
+  createAuditLogWhere,
+  filterAndPaginateAuditLogs,
+} from "./query.js";
 
 export class repositoryManager {
-  async filterHistoric(
-    search: string,
-    actor: actorIdODT,
-    action: string,
-    from: string,
-    to: string,
-  ) {
-    await Prisma.adminAuditLog.findMany({
-      where: {},
-    });
-  }
-
   async filterActors() {
-    return await Prisma.admin.findMany();
+    return PrismaClient.admin.findMany({
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+      },
+      orderBy: { id: "asc" },
+    });
   }
 
-  async filterActorsById(id: number) {
-    return await Prisma.admin.findUnique({
-      where: {
-        id: id,
+  async filterHistoric(query: AuditLogQuery) {
+    const where: PrismaTypes.AdminAuditLogWhereInput =
+      createAuditLogWhere(query);
+
+    const records = await PrismaClient.adminAuditLog.findMany({
+      where,
+      select: {
+        id: true,
+        actorId: true,
+        actor: {
+          select: {
+            id: true,
+            nome: true,
+            email: true,
+          },
+        },
+        action: true,
+        targetType: true,
+        targetId: true,
+        createdAt: true,
+        details: true,
       },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
     });
+
+    return filterAndPaginateAuditLogs(records, query);
   }
 }

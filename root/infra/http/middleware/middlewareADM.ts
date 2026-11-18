@@ -11,7 +11,7 @@ export function middlewareValidatorAdm(req: FastifyRequest, rep: FastifyReply) {
     role: string;
   };
 
-  if (decode.role !== "admin")
+  if (decode.role !== "")
     return rep.status(403).send({ message: "Acesso negado!" });
 }
 

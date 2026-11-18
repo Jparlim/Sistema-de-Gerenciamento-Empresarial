@@ -11,6 +11,8 @@ export class repositoryManagement {
   }
 
   async consultAllAdmins() {
-    return await Prisma.admin.findMany();
+    return await Prisma.admin.findMany({
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    });
   }
 }

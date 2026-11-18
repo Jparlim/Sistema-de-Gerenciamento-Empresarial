@@ -99,4 +99,21 @@ export class repositoryManagement {
       },
     });
   }
+
+  async createInvite(email: string, idFromOwner: number, tokenHash: string) {
+    return await Prisma.adminInvite.create({
+      data: {
+        email: email,
+        tokenHash: tokenHash,
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        invitedById: idFromOwner,
+      },
+    });
+  }
+
+  async findOwner(id: number) {
+    return await Prisma.admin.findUnique({
+      where: { id: id },
+    });
+  }
 }

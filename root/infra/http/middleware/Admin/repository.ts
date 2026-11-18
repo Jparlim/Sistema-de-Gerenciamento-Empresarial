@@ -4,6 +4,11 @@ export class repositoryMiddleware {
   async consultAdmin(id: number) {
     return await Prisma.admin.findUnique({
       where: { id: id },
+      select: {
+        id: true,
+        role: true,
+        ativo: true,
+      },
     });
   }
 }

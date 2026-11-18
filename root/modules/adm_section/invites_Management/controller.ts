@@ -25,4 +25,10 @@ export const inviteManagement = {
 
     return reply.status(200).send(invites);
   },
+
+  async createInviteController(request: FastifyRequest, reply: FastifyReply) {
+    const { email } = request.body as { email: string };
+
+    return await serviceManagement.createInviteService(email);
+  },
 };
