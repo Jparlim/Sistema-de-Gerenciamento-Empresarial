@@ -1,6 +1,6 @@
 import { RepositoryLogin } from "./Repository.js";
 import bcrypt from "bcrypt";
-import { randomBytes, createHash, timingSafeEqual } from "node:crypto";
+import { randomBytes, createHash } from "node:crypto";
 import { AppError } from "../../infra/error/AppError.js";
 import { sendForgotPasswordEmail } from "../../workflows/handleEmail/forgotpassword/index.js";
 import dotenv from "dotenv";

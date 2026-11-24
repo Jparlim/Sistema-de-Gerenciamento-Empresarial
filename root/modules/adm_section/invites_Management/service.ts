@@ -1,3 +1,5 @@
+import { createHash, randomBytes } from "node:crypto";
+import { AppError } from "../../../infra/error/AppError.js";
 import { repositoryManagement } from "./repository.js";
 
 enum statusOption {
@@ -67,5 +69,25 @@ export const serviceManagement = {
       page: 1,
       pageSize: 10,
     };
+  },
+
+  async createInviteService(id: number, emailToSend: string) {
+    const verify = await repository.findOwner(id);
+
+    if (!verify) {
+      throw new AppError(404, "admin sem permissão para esta ação!");
+    }
+
+    const token = randomBytes(32).toString("hex");
+    const tokenHash = createHash("sha256").update(token).digest("hex");
+
+    const frontEndUrl = process.env.FRONTEND_URL;
+
+    await repository.createInvite(emailToSend, id, tokenHash);
+
+    const resetUrl = new URL("/convite-admin", frontEndUrl);
+    resetUrl.searchParams.set("token", tokenHash);
+
+    return resetUrl;
   },
 };
