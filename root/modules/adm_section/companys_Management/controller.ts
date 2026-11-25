@@ -1,102 +1,76 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { ServiceManagement } from "./services.js";
 import { AppError } from "../../../infra/error/AppError.js";
+import { ServiceManagement } from "./services.js";
+import { sessionAdminId } from "../shared.js";
+import { z } from "zod";
+
+const idSchema = z.coerce.number().int().positive();
+const statusSchema = z.object({
+  status: z.boolean(),
+  statusReason: z.string().trim().max(2000).optional(),
+});
 
 export const companyManagement = {
   async consultCompanysController(
-    request: FastifyRequest,
+    _request: FastifyRequest,
     reply: FastifyReply,
   ) {
-    return await ServiceManagement.consultCompanysService();
+    return reply.send(await ServiceManagement.consultCompanysService());
   },
 
   async consultCompanysFilteredController(
     request: FastifyRequest,
     reply: FastifyReply,
   ) {
-    const { search, status, from, to } = request.query as {
-      search?: string;
-      status?: "ACTIVE" | "INACTIVE";
-      from?: Date;
-      to?: Date;
-    };
-
-    const company = await ServiceManagement.consultCompanysFilteredService(
-      search,
-      status,
-      from,
-      to,
+    return reply.send(
+      await ServiceManagement.consultCompanysFilteredService(request.query),
     );
-
-    return reply.send(company);
   },
 
   async consultAdminMeController(request: FastifyRequest, reply: FastifyReply) {
-    const token = request.cookies.refreshToken as string;
-
-    const decode = request.server.jwt.decode(token) as {
-      id: number;
-      email: string;
-      role: string;
-    };
-
-    const user = await ServiceManagement.consultAdminMeService(decode.id);
-
-    return reply.send({
-      admin: {
-        id: user?.id,
-        nome: user?.nome,
-        email: user?.email,
-        role: user?.role,
-        ativo: user?.ativo,
-        createdAt: user?.createdAt,
-        lastLoginAt: user?.lastLoginAt,
-      },
-    });
+    let id: number;
+    try {
+      id = sessionAdminId(request);
+    } catch {
+      throw new AppError(401, "Sessão administrativa inválida.");
+    }
+    const admin = await ServiceManagement.consultAdminMeService(id);
+    if (!admin || !admin.ativo)
+      throw new AppError(401, "Sessão administrativa inválida.");
+    return reply.send({ admin });
   },
 
   async consultCompanyByIdController(
     request: FastifyRequest,
     reply: FastifyReply,
   ) {
-    const { id } = request.params as { id?: number };
-
-    try {
-      if (!id) {
-        throw new AppError(404, "Informações da empresa não encontrado");
-      }
-
-      const company = await ServiceManagement.consultCompanyByIdService(id);
-
-      return reply.send(company);
-    } catch (error) {
-      return reply
-        .status(404)
-        .send({ success: false, message: (error as Error).message });
-    }
+    const { id } = z.object({ id: idSchema }).parse(request.params);
+    return reply.send(await ServiceManagement.consultCompanyByIdService(id));
   },
 
   async desativarCompanyByIdController(
     request: FastifyRequest,
     reply: FastifyReply,
   ) {
-    const { id } = request.params as { id: number };
+    const { id } = z.object({ id: idSchema }).parse(request.params);
+    const body = statusSchema.parse(request.body);
+    let actorId: number;
     try {
-      if (!id) {
-        throw new AppError(
-          404,
-          "Dados da empresa não fornecido para a desativação!",
-        );
-      }
-
-      await ServiceManagement.desativarCompanyByIdService(id);
-      return reply
-        .status(200)
-        .send({ success: true, message: "empresa desativada com sucesso!" });
-    } catch (error) {
-      return reply
-        .status(404)
-        .send({ success: false, message: (error as Error).message });
+      actorId = sessionAdminId(request);
+    } catch {
+      throw new AppError(401, "Sessão administrativa inválida.");
     }
+    await ServiceManagement.setCompanyStatus(
+      id,
+      body.status,
+      body.statusReason,
+      actorId,
+    );
+    return reply.send({
+      success: true,
+      message: body.status
+        ? "Empresa reativada com sucesso."
+        : "Empresa desativada com sucesso.",
+    });
   },
 };

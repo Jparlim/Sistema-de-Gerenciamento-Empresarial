@@ -29,7 +29,7 @@ model AdminAuditLog {
   actorId Int 
   actor Admin @relation(fields: [actorId], references: [id], onDelete: Restrict)
 
-  companyId Int
+  companyId Int?
   company Company? @relation(fields: [companyId], references: [id], onDelete: Restrict)
 
   targetType String

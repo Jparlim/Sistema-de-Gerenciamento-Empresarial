@@ -1,107 +1,215 @@
 import { AppError } from "../../../infra/error/AppError.js";
-import { repositoryManagement } from "./repository.js";
+import { Prisma } from "../../../infra/database/client.js";
+import { nextDate, saoPauloDayStart } from "../historic_management/query.js";
+import {
+  companyQuerySchema,
+  escapeContains,
+  paginate,
+  writeAudit,
+} from "../shared.js";
 
-const repository = new repositoryManagement();
+const companyProjection = {
+  id: true,
+  nome: true,
+  email: true,
+  CNPJ: true,
+  telefone: true,
+  status: true,
+  statusReason: true,
+  createdAt: true,
+  lastLoginAt: true,
+} as const;
 
-interface ConsultCompanysFilteredService {
-  id: number;
-  nome: string;
-  email: string;
-  CNPJ: string;
-  telefone: string | null;
-  status: boolean;
-  statusReason: string | null;
-  createdAt: Date;
-  lastLoginAt: Date | null;
+function saoPauloMonthStart(date: Date) {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Sao_Paulo",
+      year: "numeric",
+      month: "2-digit",
+    })
+      .formatToParts(date)
+      .map((part) => [part.type, part.value]),
+  );
+  return saoPauloDayStart(`${parts.year}-${parts.month}-01`);
 }
 
-interface ConsultCompanyById {
-  id: number;
-  nome: string;
-  email: string;
-  CNPJ: string;
-  telefone: string;
-  status: boolean;
-  statusReason: string | null;
-  createdAt: Date;
-  lastLoginAt: Date | null;
-  saldo: number;
-  IA: {
-    nomeEmpresa: string | null;
-    nomeIA: string | null;
-    instructions: string | null;
-  } | null;
+function monthBefore(year: number, month: number, offset: number) {
+  const date = new Date(Date.UTC(year, month - 1 - offset, 1));
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
 export const ServiceManagement = {
   async consultCompanysService() {
-    const companys = await repository.consultAllCompanys();
-    return {
-      totalCompanies: companys.length,
-      activeCompanies: companys.filter((company) => company.status === true)
-        .length,
-      inactiveCompanies: companys.filter((company) => company.status === false)
-        .length,
-      newCompaniesThisMonth: companys.filter((company) => {
-        return (
-          company.createdAt >=
-          new Date(new Date().setDate(new Date().getDate() - 30))
+    const now = new Date();
+    const currentMonthStart = saoPauloMonthStart(now);
+    const [
+      totalCompanies,
+      activeCompanies,
+      inactiveCompanies,
+      newCompaniesThisMonth,
+      recentCompanies,
+    ] = await Promise.all([
+      Prisma.company.count(),
+      Prisma.company.count({ where: { status: true } }),
+      Prisma.company.count({ where: { status: false } }),
+      Prisma.company.count({
+        where: { createdAt: { gte: currentMonthStart, lte: now } },
+      }),
+      Prisma.company.findMany({
+        select: companyProjection,
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        take: 5,
+      }),
+    ]);
+    const pendingCompanies = await Prisma.company_Pending
+      .count()
+      .catch(() => null);
+    const monthParts = Object.fromEntries(
+      new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/Sao_Paulo",
+        year: "numeric",
+        month: "numeric",
+      })
+        .formatToParts(now)
+        .map((part) => [part.type, part.value]),
+    );
+    const months = Array.from({ length: 12 }, (_, index) =>
+      monthBefore(
+        Number(monthParts.year),
+        Number(monthParts.month),
+        11 - index,
+      ),
+    );
+    const growth = await Promise.all(
+      months.map(async (month) => {
+        const start = saoPauloDayStart(`${month}-01`);
+        const nextMonthDate = new Date(
+          Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 1),
         );
-      }).length,
-      pendingCompanies: await repository.consultCompanysPending(),
-      growth: [],
-      recentCompanies: companys
-        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-        .slice(0, 5),
+        const nextMonth = `${nextMonthDate.getUTCFullYear()}-${String(nextMonthDate.getUTCMonth() + 1).padStart(2, "0")}`;
+        return {
+          month,
+          count: await Prisma.company.count({
+            where: {
+              createdAt: {
+                gte: start,
+                lt: saoPauloDayStart(`${nextMonth}-01`),
+              },
+            },
+          }),
+        };
+      }),
+    );
+    return {
+      totalCompanies,
+      activeCompanies,
+      inactiveCompanies,
+      newCompaniesThisMonth,
+      pendingCompanies,
+      growth,
+      recentCompanies,
     };
   },
 
   async consultAdminMeService(id: number) {
-    return await repository.consultAdmin(id);
+    return Prisma.admin.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        role: true,
+        ativo: true,
+        createdAt: true,
+        lastLoginAt: true,
+      },
+    });
   },
 
-  async consultCompanysFilteredService(
-    search?: string,
-    status?: "ACTIVE" | "INACTIVE",
-    from?: Date,
-    to?: Date,
+  async consultCompanysFilteredService(rawQuery: unknown) {
+    const query = companyQuerySchema.parse(rawQuery);
+    const normalized = query.search?.replace(/[.\-/\s]/g, "");
+    const where = {
+      ...(query.status ? { status: query.status === "ACTIVE" } : {}),
+      ...(query.from || query.to
+        ? {
+            createdAt: {
+              ...(query.from ? { gte: saoPauloDayStart(query.from) } : {}),
+              ...(query.to ? { lt: saoPauloDayStart(nextDate(query.to)) } : {}),
+            },
+          }
+        : {}),
+      ...(query.search
+        ? {
+            OR: [
+              { nome: escapeContains(query.search) },
+              { email: escapeContains(query.search) },
+              { CNPJ: { contains: normalized, mode: "insensitive" as const } },
+            ],
+          }
+        : {}),
+    };
+    const [total, items] = await Promise.all([
+      Prisma.company.count({ where }),
+      Prisma.company.findMany({
+        where,
+        select: companyProjection,
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        skip: (query.page - 1) * query.pageSize,
+        take: query.pageSize,
+      }),
+    ]);
+    return paginate(items, total, query.page, query.pageSize);
+  },
+
+  async consultCompanyByIdService(id: number) {
+    const company = await Prisma.company.findUnique({
+      where: { id },
+      select: {
+        ...companyProjection,
+        saldo: true,
+        IA: { select: { nomeEmpresa: true, nomeIA: true, instructions: true } },
+      },
+    });
+    if (!company) throw new AppError(404, "Empresa não encontrada.");
+    return company;
+  },
+
+  async setCompanyStatus(
+    id: number,
+    status: boolean,
+    reason: string | undefined,
+    actorId: number,
   ) {
-    const statusMap = {
-      ACTIVE: true,
-      INACTIVE: false,
-    };
-
-    const isActiveStatus = statusMap[status!];
-
-    const companys: ConsultCompanysFilteredService[] =
-      await repository.consultCompanysFiltered(
-        search,
-        isActiveStatus,
-        from,
-        to,
-      );
-
-    return {
-      items: companys,
-      total: companys.length,
-      page: 1,
-      pageSize: 10,
-    };
-  },
-
-  async consultCompanyByIdService(id?: number) {
-    const data = await repository.consultCompanyById(id);
-
-    return data as ConsultCompanyById;
-  },
-
-  async desativarCompanyByIdService(id?: number) {
-    const verify = await repository.consultCompanyById(id);
-
-    if (!verify) {
-      throw new AppError(404, "empresa não encontrada para a desativação!");
-    }
-
-    return await repository.desativarCompanyById(id);
+    if (!status && !reason?.trim())
+      throw new AppError(400, "Informe a justificativa da desativação.");
+    await Prisma.$transaction(async (tx) => {
+      const current = await tx.company.findUnique({
+        where: { id },
+        select: { id: true, status: true, statusReason: true },
+      });
+      if (!current) throw new AppError(404, "Empresa não encontrada.");
+      if (
+        current.status === status &&
+        (!status || current.statusReason === reason?.trim())
+      )
+        return;
+      await tx.company.update({
+        where: { id },
+        data: { status, statusReason: status ? null : reason!.trim() },
+      });
+      await writeAudit(tx, {
+        actorId,
+        action: status ? "COMPANY_REACTIVATED" : "COMPANY_DEACTIVATED",
+        targetType: "Company",
+        targetId: id,
+        companyId: id,
+        details: {
+          previousStatus: current.status,
+          newStatus: status,
+          ...(status ? {} : { statusReason: reason!.trim() }),
+        },
+      });
+    });
   },
 };

@@ -1,39 +1,40 @@
 import { FastifyReply, FastifyRequest } from "fastify";
+import { z } from "zod";
+import { AppError } from "../../../infra/error/AppError.js";
 import { serviceManagement } from "./service.js";
+import { sessionAdminId } from "../shared.js";
+
+const idSchema = z.coerce.number().int().positive();
+const statusSchema = z.object({ ativo: z.boolean() });
 
 export const adminManagement = {
-  async consultAdminMeController(request: FastifyRequest, reply: FastifyReply) {
-    const { search } = request.query as { search?: string };
-    try {
-      const admin = await serviceManagement.consultAdminMeService(search);
-      return reply.send({
-        items: admin,
-      });
-    } catch (error) {
-      return reply
-        .status(404)
-        .send({ sucess: false, message: (error as Error).message });
-    }
-  },
-
   async consultAllAdminsController(
     request: FastifyRequest,
     reply: FastifyReply,
   ) {
+    return reply.send(
+      await serviceManagement.consultAllAdminsService(request.query),
+    );
+  },
+
+  async changeAdminStatusController(
+    request: FastifyRequest,
+    reply: FastifyReply,
+  ) {
+    const { id } = z.object({ id: idSchema }).parse(request.params);
+    const { ativo } = statusSchema.parse(request.body);
+    let actorId: number;
     try {
-      const admins = await serviceManagement.consultAllAdminsService();
-      return reply.send({
-        items: admins,
-        total: admins.length,
-        page: 1,
-        pageSize: 10,
-        activeOwnerCount: admins.filter((admin) => admin.role === "owner")
-          .length,
-      });
-    } catch (error) {
-      return reply
-        .status(500)
-        .send({ sucess: false, message: (error as Error).message });
+      actorId = sessionAdminId(request);
+    } catch {
+      throw new AppError(401, "Sessão administrativa inválida.");
     }
+    await serviceManagement.changeAdminStatus(id, ativo, actorId);
+    return reply.send({
+      success: true,
+      message: ativo
+        ? "Administrador reativado com sucesso."
+        : "Administrador desativado com sucesso.",
+    });
   },
 };

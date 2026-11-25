@@ -105,8 +105,17 @@ export class repositoryManagement {
       data: {
         email: email,
         tokenHash: tokenHash,
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
         invitedById: idFromOwner,
+      },
+    });
+  }
+
+  async findInvite(id: number, email: string) {
+    return await Prisma.adminInvite.findFirst({
+      where: {
+        email: email,
+        invitedById: id,
       },
     });
   }

@@ -17,6 +17,10 @@ export class RepositoryLogin {
     });
   }
 
+  async updateAdminLastLogin(id: number) {
+    return Prisma.admin.update({ where: { id }, data: { lastLoginAt: new Date() }, select: { id: true } });
+  }
+
   async createForgotPasswordEntry(
     email: string,
     tokenHash: string,

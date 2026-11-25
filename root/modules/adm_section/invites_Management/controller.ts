@@ -1,51 +1,55 @@
-import { FastifyRequest, FastifyReply } from "fastify";
-import { serviceManagement } from "./service.js";
+import { FastifyReply, FastifyRequest } from "fastify";
+import { z } from "zod";
 import { AppError } from "../../../infra/error/AppError.js";
-import { sendInviteToNewAdmin } from "../../../workflows/handleEmail/sendInviteNewAdmin/index.js";
-import { success } from "zod";
+import { serviceManagement } from "./service.js";
+import { sessionAdminId } from "../shared.js";
 
-enum statusOption {
-  PENDING = "PENDING",
-  ACCEPTED = "ACCEPTED",
-  EXPIRED = "EXPIRED",
-  REVOKED = "REVOKED",
+const idSchema = z.coerce.number().int().positive();
+const createSchema = z.object({ email: z.string().trim().email().max(254) });
+const tokenSchema = z.object({ token: z.string().min(1).max(500) });
+const acceptSchema = tokenSchema.extend({
+  nome: z.string().trim().min(1).max(200),
+  senha: z.string().min(6).max(200),
+});
+
+function actor(request: FastifyRequest) {
+  try {
+    return sessionAdminId(request);
+  } catch {
+    throw new AppError(401, "Sessão administrativa inválida.");
+  }
 }
-
-type CompanyToken = {
-  id: number;
-  email: string;
-  role: string;
-};
 
 export const inviteManagement = {
   async consultInvitesController(request: FastifyRequest, reply: FastifyReply) {
-    const { search, status, page, pageSize } = request.query as {
-      search?: string;
-      status?: statusOption;
-      page?: number;
-      pageSize?: number;
-    };
-
-    const invites = await serviceManagement.consultInvitesService(
-      search,
-      status,
+    return reply.send(
+      await serviceManagement.consultInvitesService(request.query),
     );
-
-    return reply.status(200).send(invites);
   },
-
   async createInviteController(request: FastifyRequest, reply: FastifyReply) {
-    const { email } = request.body as { email: string };
-    const token = request.cookies.refreshToken;
-
-    if (!token) throw new AppError(401, "token não encontrado!");
-
-    const decoded = request.server.jwt.verify(token) as Partial<CompanyToken>;
-
-    const url = await serviceManagement.createInviteService(decoded.id!, email);
-
-    await sendInviteToNewAdmin(email, url.toString());
-
-    return reply.status(200).send({ success: true });
+    const { email } = createSchema.parse(request.body);
+    return reply.send(
+      await serviceManagement.createInviteService(actor(request), email),
+    );
+  },
+  async resendInviteController(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = z.object({ id: idSchema }).parse(request.params);
+    return reply.send(
+      await serviceManagement.resendInviteService(actor(request), id),
+    );
+  },
+  async revokeInviteController(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = z.object({ id: idSchema }).parse(request.params);
+    return reply.send(
+      await serviceManagement.revokeInviteService(actor(request), id),
+    );
+  },
+  async validateInviteController(request: FastifyRequest, reply: FastifyReply) {
+    const { token } = tokenSchema.parse(request.query);
+    return reply.send(await serviceManagement.validateInvite(token));
+  },
+  async acceptInviteController(request: FastifyRequest, reply: FastifyReply) {
+    const { token, nome, senha } = acceptSchema.parse(request.body);
+    return reply.send(await serviceManagement.acceptInvite(token, nome, senha));
   },
 };

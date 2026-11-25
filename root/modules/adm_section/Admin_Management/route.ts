@@ -1,11 +1,17 @@
 import { FastifyInstance } from "fastify";
-import { middlewareValidatorOwner } from "../../../infra/http/middleware/Admin/index.js";
+import { middlewareValidatorAdm, middlewareValidatorOwner } from "../../../infra/http/middleware/Admin/index.js";
 import { adminManagement } from "./controller.js";
 
 export function manageAdmin_route(app: FastifyInstance) {
   app.get(
     "/admin/administrators",
-    { preHandler: middlewareValidatorOwner },
+    { preHandler: middlewareValidatorAdm },
     adminManagement.consultAllAdminsController,
+  );
+
+  app.patch(
+    "/admin/administrators/:id/status",
+    { preHandler: middlewareValidatorOwner },
+    adminManagement.changeAdminStatusController,
   );
 }

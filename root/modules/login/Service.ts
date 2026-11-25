@@ -28,14 +28,16 @@ export const ServiceLogin = {
 
   async validateAdmin(email: string, senha: string) {
     const verify = await repository.findAdminByEmail(email);
-
-    const passwordHash = await bcrypt.compare(senha, verify!.senha!);
-
-    if (!passwordHash) {
+    if (!verify || !(await bcrypt.compare(senha, verify.senha))) {
       throw new AppError(401, "Email ou senha inválidos!");
     }
 
-    return verify!;
+    if (!verify.ativo) throw new AppError(403, "Este administrador está desativado.");
+
+    await repository.updateAdminLastLogin(verify.id);
+    verify.lastLoginAt = new Date();
+
+    return verify;
   },
 
   async forgotPassword(email: string) {

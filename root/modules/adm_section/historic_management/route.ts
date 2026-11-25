@@ -1,17 +1,17 @@
 import { FastifyInstance } from "fastify";
 import { historicController } from "./controller.js";
-import { middlewareValidatorOwner } from "../../../infra/http/middleware/Admin/index.js";
+import { middlewareValidatorAdm } from "../../../infra/http/middleware/Admin/index.js";
 
 export function historic_route(app: FastifyInstance) {
   app.get(
     "/admin/audit-logs/actors",
-    { preHandler: middlewareValidatorOwner },
+    { preHandler: middlewareValidatorAdm },
     historicController.consultActor,
   );
 
   app.get(
     "/admin/audit-logs",
-    { preHandler: middlewareValidatorOwner },
+    { preHandler: middlewareValidatorAdm },
     historicController.consultAuditLogsController,
   );
 }
