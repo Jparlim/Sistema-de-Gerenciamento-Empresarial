@@ -4,7 +4,7 @@ export class repositoryManagement {
   async consultAdmin(search?: string) {
     return await Prisma.admin.findUnique({
       where: {
-        name: search,
+        // foi tirado o name daqui, talvez mude na lógica
         email: search,
       },
     });

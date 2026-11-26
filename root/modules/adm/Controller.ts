@@ -8,8 +8,9 @@ interface UpdateAdminRequest {
 
 export const ControllerAdm = {
   async CreateController(request: FastifyRequest, reply: FastifyReply) {
-    const { email } = request.body as {
+    const { email, nome } = request.body as {
       email: string;
+      nome: string;
     };
     const token = request.cookies.refreshToken as string;
 
@@ -25,7 +26,7 @@ export const ControllerAdm = {
     if (decode.role !== "admin")
       return reply.status(403).send({ message: "ação negada!" });
 
-    const result = await ServiceAdm.CreateService(email, decode.id);
+    const result = await ServiceAdm.CreateService(email, nome, decode.id);
 
     // validar se o email foi enviado com sucesso, caso não, informar outra mensagem.
     if (!result) {

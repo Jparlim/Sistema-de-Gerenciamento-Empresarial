@@ -1,10 +1,8 @@
 import { RepositoryAdm } from "./Repository.js";
-import bcrypt from "bcrypt";
-
 const repository = new RepositoryAdm();
 
 export const ServiceAdm = {
-  async CreateService(email: string, IdCreator: number) {
+  async CreateService(email: string, nome: string, IdCreator: number) {
     const validateNewEmail = await repository.FindAdminByEmail(email);
 
     const validadeCreator = await repository.FindAdminById(IdCreator);

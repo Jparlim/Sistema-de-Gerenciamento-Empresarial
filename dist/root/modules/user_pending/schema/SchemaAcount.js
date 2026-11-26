@@ -1,0 +1,23 @@
+import z from "zod";
+export const CreateAcountPending = z.object({
+    nome: z.string().nonempty({ message: "O nome da empresa é obrigatório!" }),
+    email: z.email({ message: "Email inválido!" }),
+    senha: z.string().nonempty({ message: "A senha é obrigatória!" }),
+    CNPJ: z.string().nonempty({ message: "O CNPJ é obrigatório!" }),
+    telefone: z
+        .string()
+        .nonempty({ message: "O número de telefone é obrigatório!" }),
+    token: z.string().nonempty({ message: "token é necessário!" }),
+    token_expires: z.date(),
+});
+export const CreateAcountWithDataOnBody = z.object({
+    nome: z.string().nonempty({ message: "O nome da empresa é obrigatório!" }),
+    email: z.email({ message: "Email inválido!" }),
+    senha: z
+        .string()
+        .min(6, { message: "A senha deve ter ao menos 6 caracteres!" }),
+    CNPJ: z.string().nonempty({ message: "O CNPJ é obrigatório!" }),
+    telefone: z
+        .string()
+        .nonempty({ message: "O número de telefone é obrigatório!" }),
+});

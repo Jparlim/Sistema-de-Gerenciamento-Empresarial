@@ -1,14 +1,15 @@
 import { Prisma } from "../../infra/database/client.js";
 
 export class RepositoryAdm {
-  async CreateAdmin(email: string, senha: string) {
-    return await Prisma.admin.create({
-      data: {
-        email: email,
-        senha: senha,
-      },
-    });
-  }
+  // async CreateAdmin(email: string, senha: string) {
+  //   return await Prisma.admin.create({
+  //     data: {
+  //       nome: "usuario teste",
+  //       email: email,
+  //       senha: senha,
+  //     },
+  //   });
+  // }
 
   async FindAdminById(id: number) {
     return await Prisma.admin.findUnique({

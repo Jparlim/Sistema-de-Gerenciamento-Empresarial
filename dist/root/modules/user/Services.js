@@ -1,0 +1,66 @@
+import { RepositoryCount } from "./Repository.js";
+import { Prisma } from "../../infra/database/client.js";
+import crypto from "crypto";
+import { AppError } from "../../infra/error/AppError.js";
+import { sendVerificationCodeEmail } from "../../workflows/handleEmail/SendVerificationCode/index.js";
+const repository = new RepositoryCount();
+export const ServicesAcount = {
+    async CreateAcount(data, token) {
+        const verify = await repository.findByIdPending(data.id);
+        if (!verify)
+            throw new AppError(404, "Ocorreu um erro! empresa não foi encontrada!");
+        if (token !== verify.token) {
+            const newToken = crypto.randomInt(100000, 1000000).toString();
+            await Prisma.company_Pending.update({
+                where: {
+                    id: data.id,
+                },
+                data: {
+                    token: newToken,
+                    token_expires: new Date(Date.now() + 15 * 60 * 1000),
+                },
+            });
+            await sendVerificationCodeEmail(verify.email, newToken);
+            throw new AppError(400, "token inválido! outro token foi gerado, use o botão de reenviar código.");
+        }
+        if (new Date() > verify?.token_expires) {
+            const tokenSend = crypto.randomInt(100000, 1000000).toString();
+            await Prisma.company_Pending.update({
+                where: {
+                    id: data.id,
+                },
+                data: {
+                    token: tokenSend,
+                    token_expires: new Date(Date.now() + 15 * 60 * 1000),
+                },
+            });
+            throw new AppError(400, "token expirou! use o botão de reenviar código.");
+        }
+        const userId = await repository.create({
+            nome: verify.nome,
+            email: verify.email,
+            senha: verify.senha,
+            CNPJ: verify.CNPJ,
+            telefone: verify.telefone,
+            status: true,
+        });
+        await Prisma.company_Pending.delete({
+            where: {
+                id: verify.id,
+            },
+        });
+        return userId.id;
+    },
+    async UpdateAcount(id, data) {
+        return await repository.update(id, data);
+    },
+    async DeleteAcount(id) {
+        return await repository.delete(id);
+    },
+    async FindAllAcount() {
+        return await repository.findAll();
+    },
+    async FindByIdAcount(id) {
+        return await repository.findById(id);
+    },
+};

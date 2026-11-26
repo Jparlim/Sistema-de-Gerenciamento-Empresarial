@@ -1,0 +1,37 @@
+import z from "zod";
+export const SchemaDataClient = z.object({
+    nome: z.string().nonempty({ message: "nome do cliente deve ser inserido!" }),
+    contato: z
+        .string()
+        .nonempty({ message: "número do cliente deve ser inserido!" }),
+    status: z.enum(["Fechado", "Desistência", "Em Negociação"]),
+    resumo: z.string(),
+    valorPotencial: z
+        .number()
+        .nonnegative({ message: "valor potencial deve ser maior ou igual a 0!" })
+        .optional(),
+});
+export const SchemaDataClientUpdate = z.object({
+    nome: z
+        .string()
+        .nonempty({ message: "nome do cliente deve ser inserido!" })
+        .optional(),
+    contato: z
+        .string()
+        .nonempty({ message: "número do cliente deve ser inserido!" })
+        .optional(),
+    status: z.enum(["Fechado", "Desistência", "Em Negociação"]).optional(),
+    resumo: z.string().optional(),
+});
+export const SchemaDataClientWithIA = z.object({
+    nome: z.string().nonempty({ message: "nome do cliente deve ser inserido!" }),
+    contato: z
+        .string()
+        .nonempty({ message: "número do cliente deve ser inserido!" }),
+    status: z.enum(["Fechado", "Desistência", "Em Negociação"]),
+    companyId: z.number(),
+    dados: z.any().nullable(),
+    // arrumar a tipagem do "dados", para fins de testes, coloquei como any
+    resumo: z.string(),
+    valorPotencial: z.number().nonnegative().optional(),
+});
