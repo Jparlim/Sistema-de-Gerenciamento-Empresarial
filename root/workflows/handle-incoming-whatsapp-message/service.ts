@@ -75,8 +75,6 @@ export async function handleIncomingWhatsappMessage(
 
   await setInMemory(key, { role: "model", content: result.response });
 
-  // verificar se todos os campos do dataClient são diferentes de "null"
-
   const verify = Object.entries(result.dataClient).every(
     ([, value]) => value !== "null",
   );
@@ -91,8 +89,6 @@ export async function handleIncomingWhatsappMessage(
       resumo: result.dataClient.resumo || "não identificado",
     });
   }
-
-  console.log(result.dataClient);
 
   return result;
 }

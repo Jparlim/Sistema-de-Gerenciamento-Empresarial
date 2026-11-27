@@ -29,7 +29,7 @@ export const ServicesClient = {
 
     if (verify) throw new Error("cliente já cadastrado!");
 
-    const regexNumber = data.nome.replace(/\D/g, "");
+    const regexNumber = data.contato.replace(/\D/g, "");
 
     const newData = { ...data, contato: regexNumber };
 

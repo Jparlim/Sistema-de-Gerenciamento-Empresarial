@@ -14,8 +14,6 @@ export const ServiceAdm = {
       throw new Error("Email já cadastrado!");
     }
 
-    // enviar o email para o email informado com um link de confirmação para criar a senha do novo administrador
-
     return true;
   },
 
